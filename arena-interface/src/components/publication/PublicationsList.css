@@ -1,0 +1,110 @@
+.publications-page {
+  position: relative;
+  /* min-height: 100vh; */
+  background: #f5f5f5;
+  overflow: hidden;
+  padding: 20px 250px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.publication-card {
+  border-radius: 20px;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  min-height: 220px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.publication-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.card-header-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #ffffff;
+  color: #0a2540;
+  padding: 10px 15px;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  border-bottom: 1px solid #ddd;
+}
+
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header-left img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #0a2540;
+}
+
+.card-header-left h5 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0a2540;
+}
+
+.badge-type {
+  background: #f0f0f0;
+  color: #0a2540;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  text-transform: capitalize;
+}
+
+.card-body {
+  flex-grow: 1;
+  padding: 15px;
+}
+
+.card-text {
+  font-size: 0.95rem;
+  color: #1f2f50;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  font-size: 0.9rem;
+}
+
+.card-footer a {
+  text-decoration: none;
+  color: #2575fc;
+  font-weight: 500;
+}
+
+.card-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .publications-page {
+    padding: 30px 10px;
+  }
+
+  .card-header-left h5 {
+    font-size: 0.9rem;
+  }
+
+  .card-text {
+    font-size: 0.85rem;
+  }
+}

@@ -7,7 +7,7 @@ const Choice = () => {
   const navigate = useNavigate();
 
   const handleChoice = (role) => {
-    if (role === "client") navigate("/client/home");
+    if (role === "client") navigate("/home");
     else if (role === "contributor") navigate("/contributor/form");
   };
 
