@@ -7,13 +7,18 @@ import {
   BsGear,
 } from "react-icons/bs";
 import { RiHome9Line } from "react-icons/ri";
+import { LuLayoutDashboard } from "react-icons/lu";
 const Sidebar = () => {
   const [selected, setSelected] = useState("dashboard");
 
   const items = [
     { id: "Home", icon: <RiHome9Line size={24} />, label: "Home" },
+    {
+      id: "dashboard",
+      icon: <LuLayoutDashboard size={24} />,
+      label: "Dashboard",
+    },
     { id: "profile", icon: <BsPerson size={24} />, label: "Profile" },
-    { id: "messages", icon: <BsChatDots size={24} />, label: "Messages" },
     { id: "help", icon: <BsQuestionCircle size={24} />, label: "Help" },
     { id: "settings", icon: <BsGear size={24} />, label: "Settings" },
   ];
@@ -35,7 +40,7 @@ const Sidebar = () => {
 
       <style jsx="true">{`
         .sidebar-container {
-          width: 100px;
+          width: 70px;
           height: 100vh;
           background: #fff;
           border-left: 1px solid #ccc;

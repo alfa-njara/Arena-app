@@ -1,20 +1,49 @@
 import React from "react";
-import { FaSearch } from "react-icons/fa";
+import Logo from "../../assets/arena2.png";
+import { LuSearch } from "react-icons/lu";
 
 const Search = ({ query, setQuery }) => {
   return (
-    <div className="search-bar mb-4 mt-4 d-flex justify-content-center">
-      <div className="search-input-wrapper">
-        <FaSearch className="search-icon" />
+    <div className="search-bar pb-4 pt-4 d-flex justify-content-evenly align-items-center">
+      <div className="search-title d-flex align-items-center me-3">
+        <img src={Logo} alt="Arena Logo" className="arena-logo" />
+        <h2 className="arena-text mb-0">Arena</h2>
+      </div>
+
+      <div className="search-input-wrapper d-flex align-items-center">
         <input
           type="text"
           placeholder="Rechercher les collaborateurs ou des publications..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
+        <LuSearch className="search-icon" />
       </div>
 
       <style jsx="true">{`
+        .search-title {
+          display: flex;
+          align-items: center;
+          font-weight: bold;
+        }
+
+        .arena-logo {
+          width: 40px;
+          height: 40px;
+          object-fit: contain;
+          margin-right: 8px;
+        }
+
+        .arena-text {
+          font-size: 1.5rem;
+          color: #000000;
+          font-weight: bold;
+        }
+
+        // .search-bar {
+        //   background: #fff;
+        // }
+
         .search-input-wrapper {
           position: relative;
           width: 50%;
