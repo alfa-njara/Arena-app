@@ -1,20 +1,19 @@
-import React from "react";
-import PublicationsList from "../components/publication/PublicationsList";
-import Search from "../components/search/Search";
-import Sidebar from "../components/sidebar/Sidebar";
+import { Outlet } from "react-router-dom";
+import Sidebar from "../../components/sidebar/Sidebar";
 
-const Home = () => {
+const Layout = () => {
   return (
-    <div className="home-page">
+    <div className="layout-page">
       <div className="blur-bg d-flex">
+        <Sidebar />
+
         <div className="main-content">
-          <Search />
-          <PublicationsList />
+          <Outlet />
         </div>
       </div>
 
       <style jsx="true">{`
-        .home-page {
+        .layout-page {
           position: relative;
           min-height: 100vh;
           width: 100vw;
@@ -31,10 +30,12 @@ const Home = () => {
           backdrop-filter: blur(10px);
           background: rgba(255, 255, 255, 0.15);
           box-sizing: border-box;
+          border-left: 1px solid #ccc;
         }
 
         .main-content {
           flex: 1;
+          padding: 0;
         }
 
         @media (max-width: 992px) {
@@ -53,4 +54,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Layout;

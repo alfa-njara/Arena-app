@@ -1,51 +1,73 @@
-import React, { useState } from "react";
-import {
-  BsSpeedometer2,
-  BsPerson,
-  BsChatDots,
-  BsQuestionCircle,
-  BsGear,
-} from "react-icons/bs";
+import { BsPerson, BsQuestionCircle, BsGear } from "react-icons/bs";
 import { RiHome9Line } from "react-icons/ri";
 import { LuLayoutDashboard } from "react-icons/lu";
-const Sidebar = () => {
-  const [selected, setSelected] = useState("dashboard");
+import { GrFavorite } from "react-icons/gr";
+import { NavLink } from "react-router-dom";
 
+const Sidebar = () => {
   const items = [
-    { id: "Home", icon: <RiHome9Line size={24} />, label: "Home" },
+    {
+      id: "home",
+      path: "/home",
+      icon: <RiHome9Line size={24} />,
+      label: "Home",
+    },
     {
       id: "dashboard",
+      path: "/dashboard",
       icon: <LuLayoutDashboard size={24} />,
       label: "Dashboard",
     },
-    { id: "profile", icon: <BsPerson size={24} />, label: "Profile" },
-    { id: "help", icon: <BsQuestionCircle size={24} />, label: "Help" },
-    { id: "settings", icon: <BsGear size={24} />, label: "Settings" },
+    {
+      id: "profile",
+      path: "/contributor/profile",
+      icon: <BsPerson size={24} />,
+      label: "Profile",
+    },
+    {
+      id: "favorites",
+      path: "/favorites",
+      icon: <GrFavorite size={24} />,
+      label: "Favorites",
+    },
+    {
+      id: "help",
+      path: "/help",
+      icon: <BsQuestionCircle size={24} />,
+      label: "Help",
+    },
+    {
+      id: "settings",
+      path: "/settings",
+      icon: <BsGear size={24} />,
+      label: "Settings",
+    },
   ];
 
   return (
     <div className="sidebar-container d-flex flex-column align-items-center">
       {items.map((item) => (
-        <div
+        <NavLink
           key={item.id}
-          className={`sidebar-item d-flex flex-column align-items-center justify-content-center mb-3 ${
-            selected === item.id ? "selected" : ""
-          }`}
-          onClick={() => setSelected(item.id)}
+          to={item.path}
+          className={({ isActive }) =>
+            `sidebar-item d-flex flex-column align-items-center justify-content-center mb-3 ${
+              isActive ? "selected" : ""
+            }`
+          }
         >
           <div className="icon">{item.icon}</div>
           <small className="mt-1">{item.label}</small>
-        </div>
+        </NavLink>
       ))}
 
       <style jsx="true">{`
         .sidebar-container {
           width: 70px;
           height: 100vh;
-          background: #fff;
+          background: #f5f5f5;
           border-left: 1px solid #ccc;
-          padding: 20px 5px;
-          position: relative;
+          padding: 10px 5px;
         }
 
         .sidebar-item {
@@ -56,6 +78,8 @@ const Sidebar = () => {
           border-radius: 12px;
           padding: 10px;
           transition: all 0.3s ease;
+          text-decoration: none;
+          color: inherit;
         }
 
         .sidebar-item:hover {
@@ -76,6 +100,7 @@ const Sidebar = () => {
           .sidebar-container {
             flex-direction: row;
             width: 100%;
+            height: auto;
             border-left: none;
             border-top: 1px solid #ccc;
             padding: 10px 0;
@@ -84,6 +109,7 @@ const Sidebar = () => {
 
           .sidebar-item {
             flex: 1;
+            margin-bottom: 0;
           }
 
           .sidebar-item small {
