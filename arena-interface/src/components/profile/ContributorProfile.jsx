@@ -1,197 +1,312 @@
 import React, { useEffect, useState } from "react";
 import {
-  FaBuilding,
   FaPhone,
   FaTag,
   FaGlobe,
   FaInfoCircle,
   FaEdit,
   FaSave,
+  FaMapMarkerAlt,
+  FaCamera,
+  FaStore,
 } from "react-icons/fa";
 
-const defaultProfile = {
+const DEFAULT_PROFILE = {
   companyName: "Arena Boutique",
-  number: "+261 34 00 000 00",
-  type: "boutique",
-  link: "https://arena-mg.com",
+  phone: "+261 34 00 000 00",
+  category: "Shop",
+  website: "https://arena-mg.com",
   description:
-    "Nous sommes une boutique partenaire d’Arena spécialisée dans les produits innovants et locaux.",
+    "We are an Arena partner boutique specializing in innovative and local products from Madagascar.",
+  location: "Antananarivo, MG",
+  logoUrl: null,
 };
 
 const ContributorProfile = () => {
-  const [profile, setProfile] = useState(defaultProfile);
+  const [profile, setProfile] = useState(DEFAULT_PROFILE);
+  const [tempProfile, setTempProfile] = useState(DEFAULT_PROFILE);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     const savedData = localStorage.getItem("contributorData");
     if (savedData) {
-      setProfile(JSON.parse(savedData));
+      const parsed = JSON.parse(savedData);
+      setProfile(parsed);
+      setTempProfile(parsed);
     }
   }, []);
 
   const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
+    setTempProfile({ ...tempProfile, [e.target.name]: e.target.value });
   };
 
   const handleUpdate = () => {
-    localStorage.setItem("contributorData", JSON.stringify(profile));
+    setProfile(tempProfile);
+    localStorage.setItem("contributorData", JSON.stringify(tempProfile));
     setIsEditing(false);
-    alert("Profil mis à jour 🚀");
+  };
+
+  const handleCancel = () => {
+    setTempProfile(profile);
+    setIsEditing(false);
   };
 
   return (
-    <div className="container-fluid py-5">
-      <div className="card shadow-lg border-0 rounded-4">
-        {/* Header large */}
-        <div className="card-header bg-primary text-white py-4 px-5 rounded-top-4">
-          <h2 className="mb-0">
-            <FaBuilding className="me-2" />
-            {profile.companyName}
-          </h2>
-        </div>
-
-        <div className="card-body p-5">
-          {isEditing ? (
-            <div className="row g-4">
-              <div className="col-md-6">
-                <label className="form-label">
-                  <FaBuilding className="me-2 text-primary" />
-                  Company Name
-                </label>
-                <input
-                  type="text"
-                  name="companyName"
-                  className="form-control"
-                  value={profile.companyName}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  <FaPhone className="me-2 text-primary" />
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  name="number"
-                  className="form-control"
-                  value={profile.number}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  <FaTag className="me-2 text-primary" />
-                  Type
-                </label>
-                <select
-                  name="type"
-                  className="form-select"
-                  value={profile.type}
-                  onChange={handleChange}
-                >
-                  <option value="boutique">Boutique</option>
-                  <option value="service">Professional Service</option>
-                  <option value="entertainment">Entertainment</option>
-                  <option value="education">Education</option>
-                  <option value="restauration">Restaurant</option>
-                  <option value="art-culture">Art & Culture</option>
-                  <option value="health">Health</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div className="col-md-6">
-                <label className="form-label">
-                  <FaGlobe className="me-2 text-primary" />
-                  Website
-                </label>
-                <input
-                  type="text"
-                  name="link"
-                  className="form-control"
-                  value={profile.link}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-12">
-                <label className="form-label">
-                  <FaInfoCircle className="me-2 text-primary" />
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  className="form-control"
-                  rows="4"
-                  value={profile.description}
-                  onChange={handleChange}
-                />
-              </div>
-
-              <div className="col-12">
-                <button
-                  className="btn btn-success w-100 rounded-pill mt-3"
-                  onClick={handleUpdate}
-                >
-                  <FaSave className="me-2" />
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="row g-4">
-              <div className="col-md-6">
-                <div className="p-4 bg-light rounded-3 h-100">
-                  <FaPhone className="me-2 text-primary" />
-                  <strong>Phone:</strong>
-                  <p className="mt-2 mb-0">{profile.number}</p>
-                </div>
-              </div>
-
-              <div className="col-md-6">
-                <div className="p-4 bg-light rounded-3 h-100">
-                  <FaTag className="me-2 text-primary" />
-                  <strong>Type:</strong>
-                  <p className="mt-2 mb-0">{profile.type}</p>
-                </div>
-              </div>
-
-              <div className="col-12">
-                <div className="p-4 bg-light rounded-3">
-                  <FaGlobe className="me-2 text-primary" />
-                  <strong>Website:</strong>
-                  <p className="mt-2 mb-0">
-                    <a href={profile.link} target="_blank" rel="noreferrer">
-                      {profile.link}
-                    </a>
+    <div className="profile-wrapper">
+      <main className="container py-5 mt-5">
+        {/* justify-content-center permet de bien centrer le bloc main dans l'espace disponible */}
+        <div className="row g-4 justify-content-center">
+          {/* --- GAUCHE: INFOS DÉTAILLÉES --- */}
+          <div className="col-lg-7">
+            <div className="card border-0 shadow-sm rounded-4 pb-4 overflow-hidden bg-white">
+              <div className="p-4 border-bottom bg-white d-flex justify-content-between align-items-center">
+                <div>
+                  <h4 className="fw-bold mb-1 text-dark">
+                    General Information
+                  </h4>
+                  <p className="text-muted small mb-0">
+                    Manage your public business details.
                   </p>
                 </div>
+                {isEditing && (
+                  <span className="badge bg-primary-subtle text-primary px-3">
+                    Editing Mode
+                  </span>
+                )}
               </div>
 
-              <div className="col-12">
-                <div className="p-4 bg-light rounded-3">
-                  <FaInfoCircle className="me-2 text-primary" />
-                  <strong>Description:</strong>
-                  <p className="mt-2 mb-0">{profile.description}</p>
+              <div className="card-body p-4 pt-5">
+                {isEditing ? (
+                  <div className="row g-4">
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold small text-muted">
+                        Company Name
+                      </label>
+                      <input
+                        type="text"
+                        name="companyName"
+                        className="form-control custom-input"
+                        value={tempProfile.companyName}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold small text-muted">
+                        Category
+                      </label>
+                      <select
+                        name="category"
+                        className="form-select custom-input"
+                        value={tempProfile.category}
+                        onChange={handleChange}
+                      >
+                        <option value="Shop">Retail Shop</option>
+                        <option value="Service">Professional Service</option>
+                        <option value="Restaurant">Food & Drinks</option>
+                      </select>
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold small text-muted">
+                        Phone
+                      </label>
+                      <input
+                        type="text"
+                        name="phone"
+                        className="form-control custom-input"
+                        value={tempProfile.phone}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label fw-semibold small text-muted">
+                        Website
+                      </label>
+                      <input
+                        type="text"
+                        name="website"
+                        className="form-control custom-input"
+                        value={tempProfile.website}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label fw-semibold small text-muted">
+                        Description
+                      </label>
+                      <textarea
+                        name="description"
+                        rows="4"
+                        className="form-control custom-input"
+                        value={tempProfile.description}
+                        onChange={handleChange}
+                      ></textarea>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="row g-4">
+                    <div className="col-md-6">
+                      <div className="p-4 rounded-4 border border-light-subtle bg-white h-100 transition-hover shadow-xs">
+                        <div className="d-flex align-items-center mb-2 text-muted small fw-bold text-uppercase">
+                          <FaTag className="me-2 opacity-50" /> Category
+                        </div>
+                        <p className="h5 fw-bold mb-0 text-dark">
+                          {profile.category}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="col-md-6">
+                      <div className="p-4 rounded-4 border border-light-subtle bg-white h-100 transition-hover shadow-xs">
+                        <div className="d-flex align-items-center mb-2 text-muted small fw-bold text-uppercase">
+                          <FaPhone className="me-2 opacity-50" /> Contact
+                        </div>
+                        <p className="h5 fw-bold mb-0 text-dark">
+                          {profile.phone}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="col-12">
+                      <div className="p-4 rounded-4 border border-light-subtle bg-white shadow-xs">
+                        <div className="d-flex align-items-center mb-3 text-muted small fw-bold text-uppercase">
+                          <FaInfoCircle className="me-2 opacity-50" /> About
+                        </div>
+                        <p
+                          className="lead text-secondary mb-0"
+                          style={{ fontSize: "1.05rem" }}
+                        >
+                          {profile.description}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="col-12">
+                      <div className="d-flex align-items-center p-4 bg-dark rounded-4 shadow-lg text-white">
+                        <div className="bg-white bg-opacity-20 p-3 rounded-3 me-4">
+                          <FaGlobe size={24} />
+                        </div>
+                        <div className="flex-grow-1">
+                          <small
+                            className="text-white-50 d-block fw-bold text-uppercase"
+                            style={{ fontSize: "0.65rem" }}
+                          >
+                            Official Website
+                          </small>
+                          <a
+                            href={profile.website}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-white text-decoration-none fw-bold fs-5"
+                          >
+                            {profile.website.replace("https://", "")}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* --- DROITE: RÉSUMÉ --- */}
+          <div className="col-lg-4">
+            {/* Le sticky-top ici se réfère maintenant au scroll du main-content du Layout */}
+            <div className="sticky-column">
+              <div className="card border-0 shadow-sm rounded-4 mb-4 bg-white text-center p-4 pt-5">
+                <div
+                  className="position-absolute start-50 translate-middle-x shadow-md rounded-circle bg-white p-1"
+                  style={{ top: "-45px" }}
+                >
+                  <div
+                    className="rounded-circle overflow-hidden bg-light d-flex align-items-center justify-content-center"
+                    style={{ width: "90px", height: "90px" }}
+                  >
+                    {profile.logoUrl ? (
+                      <img
+                        src={profile.logoUrl}
+                        className="w-100 h-100 object-fit-cover"
+                        alt="Logo"
+                      />
+                    ) : (
+                      <FaStore size={35} className="opacity-20" />
+                    )}
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <h1 className="h4 fw-bold mb-1 text-dark">
+                    {profile.companyName}
+                  </h1>
+                  <div className="text-muted small">
+                    <FaMapMarkerAlt className="me-1" />
+                    {profile.location}
+                  </div>
                 </div>
               </div>
 
-              <div className="col-12">
-                <button
-                  className="btn btn-outline-primary w-100 rounded-pill mt-3"
-                  onClick={() => setIsEditing(true)}
-                >
-                  <FaEdit className="me-2" />
-                  Edit Profile
-                </button>
+              <div className="card border-0 shadow-lg rounded-4 overflow-hidden p-3">
+                {!isEditing ? (
+                  <button
+                    className="btn btn-outline-dark w-100 py-3 rounded-4 fw-bold btn-hover-effect"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    <FaEdit className="me-2" /> Edit Profile
+                  </button>
+                ) : (
+                  <div className="d-grid gap-2">
+                    <button
+                      className="btn btn-dark py-3 rounded-4 fw-bold"
+                      onClick={handleUpdate}
+                    >
+                      <FaSave className="me-2" /> Save
+                    </button>
+                    <button
+                      className="btn btn-link text-muted py-2 small fw-medium"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      </main>
+
+      <style jsx="true">{`
+        .profile-wrapper {
+          width: 100%;
+        }
+        .sticky-column {
+          position: sticky;
+          top: 2rem; /* Espace sous la navbar fixe */
+        }
+        .shadow-xs {
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+        .shadow-md {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .transition-hover:hover {
+          transform: translateY(-3px);
+          border-color: #000 !important;
+          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+          transition: all 0.3s ease;
+        }
+        .custom-input {
+          padding: 0.8rem 1rem;
+          border-radius: 12px;
+          border: 1px solid #eaeaea;
+          background-color: #fbfbfc;
+        }
+        .custom-input:focus {
+          border-color: #000;
+          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.03);
+          outline: none;
+        }
+        .btn-hover-effect:hover {
+          background-color: #000;
+          color: #fff;
+        }
+      `}</style>
     </div>
   );
 };

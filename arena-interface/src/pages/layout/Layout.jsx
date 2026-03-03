@@ -1,52 +1,69 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "../../components/sidebar/Sidebar";
+import Navbar from "../../components/navbar/Navbar";
 
 const Layout = () => {
-  return (
-    <div className="layout-page">
-      <div className="blur-bg d-flex">
-        <Sidebar />
+  const location = useLocation();
 
-        <div className="main-content">
-          <Outlet />
-        </div>
+  const isProfilePage = location.pathname === "/contributor/profile";
+  const isHomePage = location.pathname === "/home";
+
+  return (
+    <div className="layout-container">
+      {/* NAVBAR FIXE EN HAUT */}
+      <div className="layout-header">
+        <Navbar showSearch={isHomePage} isVerified={isProfilePage} />
       </div>
 
-      <style jsx="true">{`
-        .layout-page {
-          position: relative;
-          min-height: 100vh;
-          width: 100vw;
-          background: #ffffff;
-          overflow-x: hidden;
-          font-family: "Segoe UI", sans-serif;
-        }
+      <div className="layout-body">
+        {/* SIDEBAR FIXE A GAUCHE */}
+        <aside className="layout-sidebar">
+          <Sidebar />
+        </aside>
 
-        .blur-bg {
-          position: relative;
-          width: 100%;
-          min-height: 100vh;
+        {/* CONTENU SCROLLABLE */}
+        <main className="layout-main">
+          <Outlet />
+        </main>
+      </div>
+
+      <style>{`
+        .layout-container {
           display: flex;
-          backdrop-filter: blur(10px);
-          background: rgba(255, 255, 255, 0.15);
-          box-sizing: border-box;
-          border-left: 1px solid #ccc;
+          flex-direction: column;
+          height: 100vh; /* Toute la hauteur de l'écran */
+          width: 100vw;
+          overflow: hidden; /* Empêche le scroll global */
         }
 
-        .main-content {
+        .layout-header {
+          flex-shrink: 0; /* Empêche la navbar de s'écraser */
+          z-index: 1000;
+        }
+
+        .layout-body {
+          display: flex;
+          flex: 1; /* Prend tout l'espace restant */
+          overflow: hidden; /* Prépare le scroll interne */
+        }
+
+        .layout-sidebar {
+          flex-shrink: 0;
+          background: #fff;
+          border-right: 1px solid #eee;
+          height: 100%;
+        }
+
+        .layout-main {
           flex: 1;
-          padding: 0;
+          overflow-y: auto; /* SEULE CETTE ZONE SCROLLE */
+          background: #f7f7f7;
+          height: 100%;
         }
 
         @media (max-width: 992px) {
-          .blur-bg {
-            flex-direction: column;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .blur-bg {
-            padding: 15px;
+          .layout-sidebar {
+            display: none; /* Cache la sidebar sur mobile pour le test */
           }
         }
       `}</style>

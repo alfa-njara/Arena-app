@@ -4,91 +4,96 @@ import { LuSearch } from "react-icons/lu";
 
 const Search = ({ query, setQuery }) => {
   return (
-    <div className="search-bar pb-2 pt-2 d-flex justify-content-between align-items-center">
-      <div className="search-title d-flex align-items-center me-3">
-        <img src={Logo} alt="Arena Logo" className="arena-logo" />
-        <h2 className="arena-text mb-0">Arena</h2>
-      </div>
+    <nav
+      className="navbar navbar-expand-lg navbar-light bg-white border-bottom sticky-top shadow-sm py-2 px-4"
+      style={{ zIndex: 1020 }}
+    >
+      <div className="container">
+        {/* Left Side: Logo & Brand */}
+        <div className="d-flex align-items-center">
+          <img
+            src={Logo}
+            alt="Arena Logo"
+            className="arena-logo me-2"
+            style={{ width: "45px", transition: "transform 0.3s ease" }}
+          />
+          <span className="fs-4 fw-bold tracking-tighter text-dark">Arena</span>
+        </div>
 
-      <div className="search-input-wrapper d-flex align-items-center">
-        <input
-          type="text"
-          placeholder="Rechercher les collaborateurs ou des publications..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
-        <LuSearch className="search-icon" />
+        {/* Center/Right: Search Bar (Expanded) */}
+        <div className="search-input-wrapper ms-auto">
+          <LuSearch className="search-icon" />
+          <input
+            type="text"
+            placeholder="Search collaborators or publications..."
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="search-input"
+          />
+        </div>
       </div>
 
       <style jsx="true">{`
-        .search-title {
-          display: flex;
-          align-items: center;
-          font-weight: bold;
-        }
-
-        .arena-logo {
-          width: 60px;
-          height: 60px;
-          object-fit: contain;
-          margin-right: 8px;
-        }
-
-        .arena-text {
-          font-size: 1.7rem;
-          color: #000000;
-          font-weight: bold;
-        }
-
-        .search-bar {
-          background: #f5f5f5;
-          padding: 0 100px;
-          margin-right: 50px;
+        .tracking-tighter {
+          letter-spacing: -1px;
         }
 
         .search-input-wrapper {
           position: relative;
-          width: 50%;
+          width: 100%;
           max-width: 450px;
         }
 
-        .search-input-wrapper .search-icon {
+        .search-icon {
           position: absolute;
           top: 50%;
-          left: 15px;
+          left: 16px;
           transform: translateY(-50%);
-          color: #2575fc;
-          font-size: 1rem;
+          color: #9ca3af;
+          font-size: 1.1rem;
           pointer-events: none;
+          transition: color 0.2s ease;
         }
 
-        .search-input-wrapper input {
+        .search-input {
           width: 100%;
-          padding: 10px 15px 10px 40px;
-          background: #ffffff;
-          border-radius: 50px;
-          border: 1px solid #ccc;
-          box-shadow: 0 4px 15px rgba(179, 207, 255, 0.15);
-          font-size: 1rem;
-          transition: all 0.3s ease;
+          padding: 10px 16px 10px 45px;
+          background: #f3f4f6;
+          border-radius: 12px;
+          border: 1px solid transparent;
+          font-size: 0.95rem;
+          font-weight: 500;
+          transition: all 0.2s ease;
           outline: none;
         }
 
-        .search-input-wrapper input:focus {
-          border-color: #2575fc;
-          box-shadow: 0 6px 20px rgba(37, 117, 252, 0.25);
+        .search-input::placeholder {
+          color: #9ca3af;
+          font-weight: 400;
+        }
+
+        .search-input:focus {
+          background: #ffffff;
+          border-color: #000000;
+          box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .search-input:focus + .search-icon {
+          color: #000000;
+        }
+
+        .arena-logo:hover {
+          transform: rotate(-10deg);
         }
 
         @media (max-width: 768px) {
-          .search-bar {
-            margin: 16px 0;
-          }
           .search-input-wrapper {
-            width: 80%;
+            max-width: 100%;
+            margin-top: 10px;
           }
         }
       `}</style>
-    </div>
+    </nav>
   );
 };
 

@@ -65,7 +65,7 @@ const FormContributor = () => {
             required
           >
             <option value="">Contribution Type</option>
-            <option value="boutique">Boutique</option>
+            <option value="boutique">Shop</option>
             <option value="service">Professional Service</option>
             <option value="entertainment">Entertainment & Events</option>
             <option value="education">Education / Training</option>

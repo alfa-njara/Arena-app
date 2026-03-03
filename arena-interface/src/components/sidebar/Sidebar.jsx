@@ -14,7 +14,7 @@ const Sidebar = () => {
     },
     {
       id: "dashboard",
-      path: "/dashboard",
+      path: "/contributor/dashboard",
       icon: <LuLayoutDashboard size={24} />,
       label: "Dashboard",
     },
@@ -30,12 +30,12 @@ const Sidebar = () => {
       icon: <GrFavorite size={24} />,
       label: "Favorites",
     },
-    {
-      id: "help",
-      path: "/help",
-      icon: <BsQuestionCircle size={24} />,
-      label: "Help",
-    },
+    // {
+    //   id: "help",
+    //   path: "/help",
+    //   icon: <BsQuestionCircle size={24} />,
+    //   label: "Help",
+    // },
     {
       id: "settings",
       path: "/settings",
@@ -65,8 +65,7 @@ const Sidebar = () => {
         .sidebar-container {
           width: 70px;
           height: 100vh;
-          background: #f5f5f5;
-          border-left: 1px solid #ccc;
+          background: #ffffff;
           padding: 10px 5px;
         }
 

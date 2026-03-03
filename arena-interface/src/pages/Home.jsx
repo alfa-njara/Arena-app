@@ -1,14 +1,14 @@
 import React from "react";
 import PublicationsList from "../components/publication/PublicationsList";
-import Search from "../components/search/Search";
-import Sidebar from "../components/sidebar/Sidebar";
 
 const Home = () => {
   return (
     <div className="home-page">
+      {/* On ne met plus la Sidebar ni le Search ici car ils sont 
+         déjà présents dans le Layout parent.
+      */}
       <div className="blur-bg d-flex">
         <div className="main-content">
-          <Search />
           <PublicationsList />
         </div>
       </div>
@@ -16,35 +16,26 @@ const Home = () => {
       <style jsx="true">{`
         .home-page {
           position: relative;
-          min-height: 100vh;
-          width: 100vw;
-          background: #ffffff;
-          overflow-x: hidden;
+          /* On retire min-height 100vh ici car c'est géré par le layout */
+          width: 100%;
+          background: transparent;
           font-family: "Segoe UI", sans-serif;
         }
 
         .blur-bg {
-          position: relative;
           width: 100%;
-          min-height: 100vh;
           display: flex;
-          backdrop-filter: blur(10px);
-          background: rgba(255, 255, 255, 0.15);
           box-sizing: border-box;
         }
 
         .main-content {
           flex: 1;
-        }
-
-        @media (max-width: 992px) {
-          .blur-bg {
-            flex-direction: column;
-          }
+          /* Ajoute un padding si tu veux que le contenu ne colle pas à la Navbar */
+          padding: 20px;
         }
 
         @media (max-width: 768px) {
-          .blur-bg {
+          .main-content {
             padding: 15px;
           }
         }
