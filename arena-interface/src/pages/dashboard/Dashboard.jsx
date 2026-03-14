@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
+import api from "../../api";
 import {
   XAxis,
   YAxis,
@@ -16,36 +17,19 @@ import {
   LuArrowUpDown,
 } from "react-icons/lu";
 
-// GÉNÉRATION DE DONNÉES MASSIVES (Simulation d'une année complète)
-const generateData = () => {
-  const data = [];
-  const now = new Date();
-  for (let i = 60; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(now.getDate() - i);
-
-    // Déterminer le timeframe pour le filtrage
-    let timeframe = "year";
-    if (i <= 30) timeframe = "month";
-    if (i <= 7) timeframe = "week";
-
-    data.push({
-      date: d.toISOString().split("T")[0],
-      label: d.toLocaleDateString("en-US", { day: "2-digit", month: "short" }),
-      views: Math.floor(Math.random() * 500) + (60 - i) * 10, // Croissance simulée
-      favorites: Math.floor(Math.random() * 50) + (60 - i) * 2,
-      timeframe: timeframe,
-    });
-  }
-  return data;
-};
-
-const massiveData = generateData();
+// DONT GENERATE MASSIVE DATA, WE GET IT FROM API
 
 const Dashboard = ({ isDarkMode }) => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [metric, setMetric] = useState("views");
   const [timeframe, setTimeframe] = useState("month");
+  const [massiveData, setMassiveData] = useState([]);
+
+  useEffect(() => {
+    api.get("/companies/stats/")
+       .then(res => setMassiveData(res.data))
+       .catch(err => console.error("Error fetching stats:", err));
+  }, []);
 
   const processedChartData = useMemo(() => {
     // Filtrage par période

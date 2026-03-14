@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
-const API_URL = import.meta.env.VITE_API_URL;
+import api from "../../api";
 
 const AuthArena = ({ initialIsLogin = true }) => {
   const navigate = useNavigate();
@@ -26,15 +27,35 @@ const AuthArena = ({ initialIsLogin = true }) => {
     e.preventDefault();
 
     if (!isLogin && form.password !== form.confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
 
     try {
       if (isLogin) {
-        alert("Login not implemented yet");
+        // Implement login
+        const endpoint = signupType === "user" ? "/customers/login/" : "/companies/login/";
+        const body = {
+          phone_number: form.number,
+          password: form.password,
+        };
+
+        const res = await api.post(endpoint, body);
+        const { access, refresh, full_name, name } = res.data;
+        
+        localStorage.setItem("access_token", access);
+        localStorage.setItem("refresh_token", refresh);
+        localStorage.setItem("user_type", signupType);
+
+        if (signupType === "contributor") {
+           // Save mock basic data for profile if loggin in as company
+           localStorage.setItem("contributorData", JSON.stringify({ companyName: name || "Company", phone: form.number }));
+           navigate("/contributor/dashboard");
+        } else {
+           navigate("/home");
+        }
       } else {
-        const endpoint = signupType === "user" ? "customers" : "companies";
+        const endpoint = signupType === "user" ? "/customers/" : "/companies/";
         const body =
           signupType === "user"
             ? {
@@ -50,24 +71,17 @@ const AuthArena = ({ initialIsLogin = true }) => {
                 password: form.password,
               };
 
-        const res = await fetch(`${API_URL}/${endpoint}/`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
-        });
+        const res = await api.post(endpoint, body);
 
-        if (res.ok) {
-          alert("Account created!");
-          navigate("/");
-        } else {
-          const data = await res.json();
-          console.log(data);
-          alert("Error creating account");
+        if (res.status === 201) {
+          toast.success("Account created! You can now log in.");
+          setIsLogin(true); // Switch to login pane
         }
       }
     } catch (error) {
       console.error(error);
-      alert("Server error");
+      const msg = error.response?.data ? JSON.stringify(error.response.data) : "Server error";
+      toast.error("Error: " + msg);
     }
   };
 

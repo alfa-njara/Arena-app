@@ -27,6 +27,8 @@ class Company(AbstractBaseUser, PermissionsMixin):
     contribution_type = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)
     description = models.CharField(max_length=500, blank=True)
+    location = models.CharField(max_length=255, blank=True, null=True)
+    logo_url = models.URLField(blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -86,3 +88,17 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.full_name
+
+# ----------------------------
+# Favorite Model
+# ----------------------------
+class Favorite(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="favorites")
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="favorited_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('customer', 'company')
+
+    def __str__(self):
+        return f"{self.customer.full_name} -> {self.company.name}"

@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Toaster } from "react-hot-toast";
 import "./App.css";
 import Home from "./pages/Home";
 import Choice from "./pages/choice/Choice";
@@ -13,6 +14,7 @@ import LandingPage from "./pages/landing/LandingPage";
 function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-center" />
       <Routes>
         {/* Redirection automatique vers /choice si on arrive sur "/" */}
         <Route path="/" element={<Navigate to="/landing" replace />} />

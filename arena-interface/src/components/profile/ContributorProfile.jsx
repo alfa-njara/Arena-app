@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import api from "../../api";
+import toast from "react-hot-toast";
 import {
   FaPhone,
   FaTag,
@@ -20,6 +22,7 @@ const DEFAULT_PROFILE = {
     "We are an Arena partner boutique specializing in innovative and local products from Madagascar.",
   location: "Antananarivo, MG",
   logoUrl: null,
+  logoUrl: null,
 };
 
 const ContributorProfile = () => {
@@ -28,22 +31,50 @@ const ContributorProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
-    const savedData = localStorage.getItem("contributorData");
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      setProfile(parsed);
-      setTempProfile(parsed);
-    }
+    fetchProfile();
   }, []);
+
+  const fetchProfile = async () => {
+    try {
+      const res = await api.get("/companies/me/");
+      const data = {
+        companyName: res.data.name || "",
+        phone: res.data.phone_number || "",
+        category: res.data.contribution_type || "Shop",
+        website: res.data.website || "",
+        description: res.data.description || "",
+        location: res.data.location || "",
+        logoUrl: res.data.logo_url || null,
+      };
+      setProfile(data);
+      setTempProfile(data);
+    } catch (err) {
+      console.error("Failed to load profile", err);
+    }
+  };
 
   const handleChange = (e) => {
     setTempProfile({ ...tempProfile, [e.target.name]: e.target.value });
   };
 
-  const handleUpdate = () => {
-    setProfile(tempProfile);
-    localStorage.setItem("contributorData", JSON.stringify(tempProfile));
-    setIsEditing(false);
+  const handleUpdate = async () => {
+    try {
+      await api.put("/companies/me/", {
+        name: tempProfile.companyName,
+        phone_number: tempProfile.phone,
+        contribution_type: tempProfile.category,
+        website: tempProfile.website,
+        description: tempProfile.description,
+        location: tempProfile.location,
+        logo_url: tempProfile.logoUrl,
+      });
+      setProfile(tempProfile);
+      setIsEditing(false);
+      toast.success("Profile updated successfully!");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update profile.");
+    }
   };
 
   const handleCancel = () => {
@@ -140,6 +171,30 @@ const ContributorProfile = () => {
                         value={tempProfile.description}
                         onChange={handleChange}
                       ></textarea>
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label fw-semibold small text-muted">
+                        Location
+                      </label>
+                      <input
+                        type="text"
+                        name="location"
+                        className="form-control custom-input"
+                        value={tempProfile.location}
+                        onChange={handleChange}
+                      />
+                    </div>
+                    <div className="col-12">
+                      <label className="form-label fw-semibold small text-muted">
+                        Logo URL
+                      </label>
+                      <input
+                        type="url"
+                        name="logoUrl"
+                        className="form-control custom-input"
+                        value={tempProfile.logoUrl || ""}
+                        onChange={handleChange}
+                      />
                     </div>
                   </div>
                 ) : (

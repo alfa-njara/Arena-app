@@ -1,31 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../components/publication/PublicationsList.css";
 import { BsTelephone, BsHeartFill } from "react-icons/bs";
-
-const favoriteItems = [
-  {
-    companyName: "Arena Boutique",
-    number: "0341234567",
-    type: "Shop",
-    link: "https://example.com",
-    description: "Trendy clothing and high-quality accessories.",
-  },
-  {
-    companyName: "Tasty Food",
-    number: "032448899",
-    type: "Restaurant",
-    link: "https://example.com",
-    description: "Delicious dining experiences and premium takeout.",
-  },
-  {
-    companyName: "Tech Solutions",
-    number: "032112233",
-    type: "Tech",
-    link: "https://example.com",
-    description: "Software and hardware support.",
-  },
-];
+import api from "../../api";
 
 // Uniformisation des clés sur 'color'
 const typeStyles = {
@@ -36,6 +13,40 @@ const typeStyles = {
 };
 
 const Favorites = ({ isDarkMode }) => {
+  const [favoriteItems, setFavoriteItems] = useState([]);
+
+  useEffect(() => {
+    fetchFavorites();
+  }, []);
+
+  const fetchFavorites = async () => {
+    try {
+      const res = await api.get("/customers/favorites/");
+      const mapped = res.data.map(item => ({
+        id: item.company,
+        companyName: item.company_details?.name || "Company",
+        number: item.company_details?.phone_number || "",
+        type: item.company_details?.contribution_type || "Shop",
+        link: item.company_details?.website || "",
+        description: item.company_details?.description || "",
+        logo: item.company_details?.logo_url || null
+      }));
+      setFavoriteItems(mapped);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const removeFavorite = async (companyId) => {
+    try {
+      await api.delete(`/customers/favorites/${companyId}/`);
+      setFavoriteItems(favoriteItems.filter(item => item.id !== companyId));
+    } catch (err) {
+      console.error(err);
+      alert("Error removing favorite");
+    }
+  };
+
   return (
     <div className={`publications-page ${isDarkMode ? "dark-mode" : ""}`}>
       <div className="container-fluid py-4">
@@ -52,7 +63,7 @@ const Favorites = ({ isDarkMode }) => {
                     <div className="pub-card-header d-flex justify-content-between align-items-center mb-3">
                       <div className="user-info d-flex align-items-center gap-2">
                         <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${pub.companyName}`}
+                          src={pub.logo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${pub.companyName}`}
                           alt="avatar"
                           className="avatar-img shadow-sm"
                         />
@@ -91,7 +102,7 @@ const Favorites = ({ isDarkMode }) => {
                         </span>
 
                         <div className="d-flex align-items-center gap-2">
-                          <button className="btn-favorite-active">
+                          <button className="btn-favorite-active" onClick={() => removeFavorite(pub.id)}>
                             <BsHeartFill size={16} />
                           </button>
                           {pub.link && (

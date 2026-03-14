@@ -1,67 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PublicationsList.css";
-import { BsTelephone, BsHeart, BsGrid, BsFire, BsClock } from "react-icons/bs";
-
-const staticData = [
-  // ... (Your existing data)
-  {
-    companyName: "Arena Boutique",
-    number: "0341234567",
-    type: "Shop",
-    link: "https://example.com",
-    description: "Trendy clothing and high-quality accessories.",
-  },
-  {
-    companyName: "Pro Services",
-    number: "0329876543",
-    type: "Service",
-    link: "https://example.com",
-    description: "Professional services for individuals and businesses.",
-  },
-  {
-    companyName: "Fun Events",
-    number: "0337711122",
-    type: "Entertainment",
-    link: "https://example.com",
-    description: "Unforgettable event planning and shows.",
-  },
-  {
-    companyName: "Learn Academy",
-    number: "034556677",
-    type: "Education",
-    link: "https://example.com",
-    description: "Training and coaching for all skill levels.",
-  },
-  {
-    companyName: "Tasty Food",
-    number: "032448899",
-    type: "Restaurant",
-    link: "https://example.com",
-    description: "Delicious dining experiences and premium takeout.",
-  },
-  {
-    companyName: "Wellness Center",
-    number: "032778899",
-    type: "Health",
-    link: "https://example.com",
-    description: "Care, well-being, and fitness tailored for you.",
-  },
-  {
-    companyName: "Art Hub",
-    number: "034332211",
-    type: "Culture",
-    link: "https://example.com",
-    description: "Exhibitions and cultural workshops.",
-  },
-  {
-    companyName: "Tech Solutions",
-    number: "032112233",
-    type: "Tech",
-    link: "https://example.com",
-    description: "Software and hardware support.",
-  },
-];
+import { BsTelephone, BsHeart, BsHeartFill, BsGrid, BsFire, BsClock } from "react-icons/bs";
+import api from "../../api";
 
 const typeStyles = {
   Shop: { bg: "#e3f2fd", color: "#0d6efd" },
@@ -85,6 +26,67 @@ const categories = [
 
 const PublicationsList = ({ isDarkMode }) => {
   const [activeFilter, setActiveFilter] = useState("All");
+  const [publications, setPublications] = useState([]);
+  const [favorites, setFavorites] = useState(new Set());
+
+  useEffect(() => {
+    fetchPublications();
+    if (localStorage.getItem("user_type") === "user") {
+      fetchFavorites();
+    }
+  }, []);
+
+  const fetchPublications = async () => {
+    try {
+      const res = await api.get("/companies/list/");
+      const mapped = res.data.map(item => ({
+        id: item.id,
+        companyName: item.name,
+        number: item.phone_number,
+        type: item.contribution_type,
+        link: item.website,
+        description: item.description,
+        logo: item.logo_url
+      }));
+      setPublications(mapped);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchFavorites = async () => {
+    try {
+      const res = await api.get("/customers/favorites/");
+      const favSet = new Set(res.data.map(f => f.company));
+      setFavorites(favSet);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const toggleFavorite = async (companyId) => {
+    if (localStorage.getItem("user_type") !== "user") {
+      alert("Only users can favorite companies");
+      return;
+    }
+
+    try {
+      if (favorites.has(companyId)) {
+        await api.delete(`/customers/favorites/${companyId}/`);
+        const newFavs = new Set(favorites);
+        newFavs.delete(companyId);
+        setFavorites(newFavs);
+      } else {
+        await api.post("/customers/favorites/", { company: companyId });
+        const newFavs = new Set(favorites);
+        newFavs.add(companyId);
+        setFavorites(newFavs);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error updating favorite");
+    }
+  };
 
   return (
     <div className={`publications-page ${isDarkMode ? "dark-mode" : ""}`}>
@@ -148,7 +150,7 @@ const PublicationsList = ({ isDarkMode }) => {
 
         {/* LISTING */}
         <div className="row g-3">
-          {staticData
+          {publications
             .filter(
               (pub) =>
                 activeFilter === "All" ||
@@ -164,7 +166,7 @@ const PublicationsList = ({ isDarkMode }) => {
                     <div className="pub-card-header d-flex justify-content-between align-items-center mb-3">
                       <div className="user-info d-flex align-items-center gap-2">
                         <img
-                          src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${pub.companyName}`}
+                          src={pub.logo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${pub.companyName}`}
                           alt="avatar"
                           className="avatar-img shadow-sm"
                         />
@@ -202,8 +204,8 @@ const PublicationsList = ({ isDarkMode }) => {
                           {pub.number}
                         </span>
                         <div className="d-flex align-items-center gap-2">
-                          <button className="btn-favorite-icon">
-                            <BsHeart size={16} />
+                          <button className="btn-favorite-icon" onClick={() => toggleFavorite(pub.id)}>
+                            {favorites.has(pub.id) ? <BsHeartFill color="#dc3545" size={16} /> : <BsHeart size={16} />}
                           </button>
                           <a
                             href={pub.link}
