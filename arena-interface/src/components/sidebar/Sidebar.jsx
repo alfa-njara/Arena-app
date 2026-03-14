@@ -1,10 +1,12 @@
-import { BsPerson, BsQuestionCircle, BsGear } from "react-icons/bs";
+import { BsPerson, BsGear, BsBoxArrowRight } from "react-icons/bs"; // Ajout de l'icône logout
 import { RiHome9Line } from "react-icons/ri";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { GrFavorite } from "react-icons/gr";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
   const items = [
     {
       id: "home",
@@ -30,12 +32,6 @@ const Sidebar = () => {
       icon: <GrFavorite size={24} />,
       label: "Favorites",
     },
-    // {
-    //   id: "help",
-    //   path: "/help",
-    //   icon: <BsQuestionCircle size={24} />,
-    //   label: "Help",
-    // },
     {
       id: "settings",
       path: "/settings",
@@ -44,49 +40,88 @@ const Sidebar = () => {
     },
   ];
 
+  const handleLogout = () => {
+    // Ajoute ta logique de déconnexion ici (clear token, etc.)
+    console.log("Logging out...");
+    navigate("/login");
+  };
+
   return (
     <div className="sidebar-container d-flex flex-column align-items-center">
-      {items.map((item) => (
-        <NavLink
-          key={item.id}
-          to={item.path}
-          className={({ isActive }) =>
-            `sidebar-item d-flex flex-column align-items-center justify-content-center mb-3 ${
-              isActive ? "selected" : ""
-            }`
-          }
-        >
-          <div className="icon">{item.icon}</div>
-          <small className="mt-1">{item.label}</small>
-        </NavLink>
-      ))}
+      <div className="nav-links d-flex flex-column align-items-center w-100">
+        {items.map((item) => (
+          <NavLink
+            key={item.id}
+            to={item.path}
+            className={({ isActive }) =>
+              `sidebar-item d-flex flex-column align-items-center justify-content-center mb-3 ${
+                isActive ? "selected" : ""
+              }`
+            }
+          >
+            <div className="icon">{item.icon}</div>
+            <small className="mt-1">{item.label}</small>
+          </NavLink>
+        ))}
+      </div>
+
+      {/* Bouton Logout tout en bas */}
+      <button
+        className="sidebar-item logout-btn d-flex flex-column align-items-center justify-content-center mt-auto"
+        onClick={handleLogout}
+      >
+        <div className="icon">
+          <BsBoxArrowRight size={24} />
+        </div>
+        <small className="mt-1">Logout</small>
+      </button>
 
       <style jsx="true">{`
         .sidebar-container {
-          width: 70px;
+          width: 80px;
           height: 100vh;
           background: #ffffff;
-          padding: 10px 5px;
+          padding: 20px 5px;
+          border-right: 1px solid #eee;
+        }
+
+        .nav-links {
+          flex: 1;
         }
 
         .sidebar-item {
           width: 100%;
+          background: none;
+          border: none;
           font-size: 0.75rem;
           text-align: center;
           cursor: pointer;
           border-radius: 12px;
-          padding: 10px;
-          transition: all 0.3s ease;
+          padding: 12px 5px;
+          transition: all 0.2s ease;
           text-decoration: none;
-          color: inherit;
+          color: #64748b;
         }
 
         .sidebar-item:hover {
-          background: #f0f0f0;
+          background: #f8fafc;
+          color: #2563eb;
         }
 
         .sidebar-item.selected {
-          background: #e0f0ff;
+          background: #eff6ff;
+          color: #2563eb;
+          font-weight: 600;
+        }
+
+        .logout-btn {
+          color: #ef4444; /* Rouge pour le logout */
+          margin-bottom: 60px;
+        }
+
+        .logout-btn:hover {
+          background: #fef2f2;
+          color: #dc2626;
         }
 
         .icon {
@@ -100,15 +135,29 @@ const Sidebar = () => {
             flex-direction: row;
             width: 100%;
             height: auto;
-            border-left: none;
-            border-top: 1px solid #ccc;
-            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            border-right: none;
+            border-top: 1px solid #eee;
+            padding: 5px 0;
+            justify-content: space-around;
+          }
+
+          .nav-links {
+            flex-direction: row;
             justify-content: space-around;
           }
 
           .sidebar-item {
             flex: 1;
-            margin-bottom: 0;
+            margin-bottom: 0 !important;
+            padding: 10px 0;
+          }
+
+          .mt-auto {
+            margin-top: 0 !important;
           }
 
           .sidebar-item small {

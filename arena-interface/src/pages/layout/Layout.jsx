@@ -57,7 +57,7 @@ const Layout = () => {
         .layout-main {
           flex: 1;
           overflow-y: auto; /* SEULE CETTE ZONE SCROLLE */
-          background: #f7f7f7;
+          background: #ffffff;
           height: 100%;
         }
 

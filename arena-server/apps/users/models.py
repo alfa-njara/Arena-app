@@ -1,28 +1,88 @@
 from django.db import models
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-class Company(models.Model):
+# ----------------------------
+# User Manager
+# ----------------------------
+class UserManager(BaseUserManager):
+    def create_user(self, phone_number, password=None, **extra_fields):
+        if not phone_number:
+            raise ValueError("Phone number is required")
+        user = self.model(phone_number=phone_number, **extra_fields)
+        user.set_password(password)  # hashage automatique
+        user.save(using=self._db)
+        return user
 
-    CONTRIBUTION_CHOICES = [
-        ("shop", "Shop"),
-        ("service", "Professional Service"),
-        ("entertainment", "Entertainment & Events"),
-        ("education", "Education / Training"),
-        ("restauration", "Restaurant / Food"),
-        ("art-culture", "Art & Culture"),
-        ("health", "Health & Wellness"),
-        ("other", "Other"),
-    ]
+    def create_superuser(self, phone_number, password=None, **extra_fields):
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
+        return self.create_user(phone_number, password, **extra_fields)
 
+# ----------------------------
+# Company Model
+# ----------------------------
+class Company(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=255)
-    phone_number = models.CharField(max_length=20)
-    contribution_type = models.CharField(
-        max_length=50,
-        choices=CONTRIBUTION_CHOICES
-    )
+    phone_number = models.CharField(max_length=20, unique=True)
+    contribution_type = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)
-    description = models.TextField()
-    password = models.CharField(max_length=255)
-    created_at = models.DateTimeField(auto_now_add=True)
+    description = models.CharField(max_length=500, blank=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    # Fix conflits permissions
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='company_set',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        verbose_name='groups'
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='company_set_permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='user permissions'
+    )
+
+    USERNAME_FIELD = "phone_number"
+    REQUIRED_FIELDS = ["name"]
+
+    objects = UserManager()
 
     def __str__(self):
         return self.name
+
+# ----------------------------
+# Customer Model
+# ----------------------------
+class Customer(AbstractBaseUser, PermissionsMixin):
+    full_name = models.CharField(max_length=255)
+    phone_number = models.CharField(max_length=20, unique=True)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+
+    # Fix conflits permissions
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='customer_set',
+        blank=True,
+        help_text='The groups this user belongs to.',
+        verbose_name='groups'
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='customer_set_permissions',
+        blank=True,
+        help_text='Specific permissions for this user.',
+        verbose_name='user permissions'
+    )
+
+    USERNAME_FIELD = "phone_number"
+    REQUIRED_FIELDS = ["full_name"]
+
+    objects = UserManager()
+
+    def __str__(self):
+        return self.full_name
