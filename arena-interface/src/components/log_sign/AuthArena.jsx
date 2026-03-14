@@ -36,7 +36,7 @@ const AuthArena = ({ initialIsLogin = true }) => {
         // Implement login
         const endpoint = signupType === "user" ? "/customers/login/" : "/companies/login/";
         const body = {
-          phone_number: form.number,
+          phone_number: form.number.replace(/\s+/g, ""),
           password: form.password,
         };
 
@@ -138,6 +138,24 @@ const AuthArena = ({ initialIsLogin = true }) => {
           {/* LOGIN */}
           <div className="auth-pane">
             <h2 className="auth-pane-title">Welcome Back</h2>
+            
+            <div className="auth-type-selector">
+              <button
+                type="button"
+                className={signupType === "user" ? "active" : ""}
+                onClick={() => setSignupType("user")}
+              >
+                Individual
+              </button>
+              <button
+                type="button"
+                className={signupType === "contributor" ? "active" : ""}
+                onClick={() => setSignupType("contributor")}
+              >
+                Business
+              </button>
+            </div>
+
             <form onSubmit={handleSubmit} className="auth-form-stack">
               <input
                 type="tel"

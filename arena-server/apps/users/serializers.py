@@ -23,15 +23,21 @@ class CompanyTokenObtainPairSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         phone_number = attrs.get("phone_number")
+        if phone_number:
+            phone_number = phone_number.replace(" ", "")
         password = attrs.get("password")
 
         try:
+            print(f"DEBUG: Company login attempt for {phone_number}")
             user = Company.objects.get(phone_number=phone_number)
+            print(f"DEBUG: Found user {user.name}")
         except Company.DoesNotExist:
-            raise serializers.ValidationError("No active account found with the given credentials")
+            print(f"DEBUG: Company {phone_number} not found")
+            raise serializers.ValidationError({"detail": f"Business account with number {phone_number} not found."})
 
         if not user.check_password(password):
-            raise serializers.ValidationError("No active account found with the given credentials")
+            print(f"DEBUG: Password mismatch for {phone_number}")
+            raise serializers.ValidationError({"detail": "Incorrect password for this business account."})
 
         if not user.is_active:
             raise serializers.ValidationError("User account is disabled.")
@@ -69,15 +75,21 @@ class CustomerTokenObtainPairSerializer(serializers.Serializer):
 
     def validate(self, attrs):
         phone_number = attrs.get("phone_number")
+        if phone_number:
+            phone_number = phone_number.replace(" ", "")
         password = attrs.get("password")
 
         try:
+            print(f"DEBUG: Customer login attempt for {phone_number}")
             user = Customer.objects.get(phone_number=phone_number)
+            print(f"DEBUG: Found user {user.full_name}")
         except Customer.DoesNotExist:
-            raise serializers.ValidationError("No active account found with the given credentials")
+            print(f"DEBUG: Customer {phone_number} not found")
+            raise serializers.ValidationError({"detail": f"Individual account with number {phone_number} not found."})
 
         if not user.check_password(password):
-            raise serializers.ValidationError("No active account found with the given credentials")
+            print(f"DEBUG: Password mismatch for {phone_number}")
+            raise serializers.ValidationError({"detail": "Incorrect password for this individual account."})
 
         if not user.is_active:
             raise serializers.ValidationError("User account is disabled.")

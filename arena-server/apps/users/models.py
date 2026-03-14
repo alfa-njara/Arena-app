@@ -53,6 +53,11 @@ class Company(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    def save(self, *args, **kwargs):
+        if self.phone_number:
+            self.phone_number = self.phone_number.replace(" ", "")
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 
@@ -85,6 +90,11 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     REQUIRED_FIELDS = ["full_name"]
 
     objects = UserManager()
+
+    def save(self, *args, **kwargs):
+        if self.phone_number:
+            self.phone_number = self.phone_number.replace(" ", "")
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.full_name
