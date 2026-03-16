@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import api from "../../api";
+import { useAppContext } from "../../context/AppContext";
 
 const AuthArena = ({ initialIsLogin = true }) => {
   const navigate = useNavigate();
+  const { login } = useAppContext();
   const [isLogin, setIsLogin] = useState(initialIsLogin);
   const [signupType, setSignupType] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
@@ -46,9 +48,9 @@ const AuthArena = ({ initialIsLogin = true }) => {
         localStorage.setItem("access_token", access);
         localStorage.setItem("refresh_token", refresh);
         localStorage.setItem("user_type", signupType);
+        login({ type: signupType });
 
         if (signupType === "contributor") {
-           // Save mock basic data for profile if loggin in as company
            localStorage.setItem("contributorData", JSON.stringify({ companyName: name || "Company", phone: form.number }));
            navigate("/contributor/dashboard");
         } else {

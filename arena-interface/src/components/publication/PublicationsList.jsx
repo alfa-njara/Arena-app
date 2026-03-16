@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./PublicationsList.css";
 import { BsTelephone, BsHeart, BsHeartFill, BsGrid, BsFire, BsClock } from "react-icons/bs";
 import api from "../../api";
+import { useAppContext } from "../../context/AppContext";
 
 const typeStyles = {
   Shop: { bg: "#e3f2fd", color: "#0d6efd" },
@@ -24,7 +25,8 @@ const categories = [
   ...Object.keys(typeStyles).filter((t) => t !== "Default"),
 ];
 
-const PublicationsList = ({ isDarkMode }) => {
+const PublicationsList = () => {
+  const { isDarkMode } = useAppContext();
   const [activeFilter, setActiveFilter] = useState("All");
   const [publications, setPublications] = useState([]);
   const [favorites, setFavorites] = useState(new Set());

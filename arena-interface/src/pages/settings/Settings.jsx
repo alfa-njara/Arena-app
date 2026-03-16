@@ -6,8 +6,10 @@ import {
   BsTelephone,
   BsGlobe,
 } from "react-icons/bs";
+import { useAppContext } from "../../context/AppContext";
 
-const Settings = ({ isDarkMode }) => {
+const Settings = () => {
+  const { isDarkMode } = useAppContext();
   // Adjust this value to match your exact Navbar height (e.g., 60px or 80px)
   const navbarHeight = "70px";
 

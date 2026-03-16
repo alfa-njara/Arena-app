@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../components/publication/PublicationsList.css";
 import { BsTelephone, BsHeartFill } from "react-icons/bs";
 import api from "../../api";
+import { useAppContext } from "../../context/AppContext";
 
 // Uniformisation des clés sur 'color'
 const typeStyles = {
@@ -12,7 +13,8 @@ const typeStyles = {
   Default: { bg: "#f8f9fa", color: "#6c757d" },
 };
 
-const Favorites = ({ isDarkMode }) => {
+const Favorites = () => {
+  const { isDarkMode } = useAppContext();
   const [favoriteItems, setFavoriteItems] = useState([]);
 
   useEffect(() => {

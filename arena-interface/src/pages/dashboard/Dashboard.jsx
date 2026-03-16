@@ -16,10 +16,12 @@ import {
   LuUser,
   LuArrowUpDown,
 } from "react-icons/lu";
+import { useAppContext } from "../../context/AppContext";
 
 // DONT GENERATE MASSIVE DATA, WE GET IT FROM API
 
-const Dashboard = ({ isDarkMode }) => {
+const Dashboard = () => {
+  const { isDarkMode } = useAppContext();
   const [sortOrder, setSortOrder] = useState("asc");
   const [metric, setMetric] = useState("views");
   const [timeframe, setTimeframe] = useState("month");
