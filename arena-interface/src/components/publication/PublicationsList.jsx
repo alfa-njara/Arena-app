@@ -5,6 +5,7 @@ import { BsTelephone, BsHeart, BsHeartFill, BsGrid, BsFire, BsClock } from "reac
 import toast from "react-hot-toast";
 import api from "../../api";
 import { useAppContext } from "../../context/AppContext";
+import CompanyProfileModal from "../profile/CompanyProfileModal";
 
 const typeStyles = {
   "Shop": { bg: "#e3f2fd", color: "#0d6efd" },
@@ -23,6 +24,7 @@ const PublicationsList = () => {
   const [activeFilter, setActiveFilter] = useState("All");
   const [publications, setPublications] = useState([]);
   const [favorites, setFavorites] = useState(new Set());
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   useEffect(() => {
     fetchPublications();
@@ -124,7 +126,23 @@ const PublicationsList = () => {
           height: calc(100vh - 70px); /* Adjusted for navbar */
           overflow-y: auto;
         }
+        
+        .pub-glass-card {
+           cursor: pointer;
+        }
+        
+        .btn-favorite-icon, .minimal-visit-btn {
+           position: relative;
+           z-index: 2;
+        }
       `}</style>
+
+      {selectedCompany && (
+        <CompanyProfileModal 
+          company={selectedCompany} 
+          onClose={() => setSelectedCompany(null)} 
+        />
+      )}
 
       <div className="container-fluid">
         <div className="filter-bar">
@@ -156,7 +174,7 @@ const PublicationsList = () => {
               const style = typeStyles[pub.type] || typeStyles.Default;
               return (
                 <div key={idx} className="col-xl-3 col-lg-4 col-md-6">
-                  <div className="pub-glass-card h-100">
+                  <div className="pub-glass-card h-100" onClick={() => setSelectedCompany(pub)}>
                     <div className="pub-card-header d-flex justify-content-between align-items-center mb-3">
                       <div className="user-info d-flex align-items-center gap-2">
                         <img
@@ -198,7 +216,13 @@ const PublicationsList = () => {
                           {pub.number}
                         </span>
                         <div className="d-flex align-items-center gap-2">
-                          <button className="btn-favorite-icon" onClick={() => toggleFavorite(pub.id)}>
+                          <button 
+                            className="btn-favorite-icon" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleFavorite(pub.id);
+                            }}
+                          >
                             {favorites.has(pub.id) ? <BsHeartFill color="#dc3545" size={16} /> : <BsHeart size={16} />}
                           </button>
                           <a
@@ -206,6 +230,7 @@ const PublicationsList = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="minimal-visit-btn"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             Visit
                           </a>

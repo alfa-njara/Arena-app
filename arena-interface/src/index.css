@@ -35,6 +35,11 @@
   --shadow-lg: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
+/* ===== TEXT SIZE ===== */
+html.text-small { font-size: 14px; }
+html.text-medium { font-size: 16px; }
+html.text-large { font-size: 18px; }
+
 /* ===== RESET ===== */
 *, *::before, *::after {
   box-sizing: border-box;

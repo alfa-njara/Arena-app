@@ -5,6 +5,7 @@ import { BsTelephone, BsHeartFill } from "react-icons/bs";
 import api from "../../api";
 import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
+import CompanyProfileModal from "../../components/profile/CompanyProfileModal";
 
 // Uniformisation des clés sur 'color'
 const typeStyles = {
@@ -17,6 +18,7 @@ const typeStyles = {
 const Favorites = () => {
   const { isDarkMode } = useAppContext();
   const [favoriteItems, setFavoriteItems] = useState([]);
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   useEffect(() => {
     fetchFavorites();
@@ -52,9 +54,24 @@ const Favorites = () => {
 
   return (
     <div className={`publications-page ${isDarkMode ? "dark-mode" : ""}`}>
-      <div className="container-fluid py-4">
-        {/* Le titre a été supprimé pour un look plus clean */}
+      <style jsx="true">{`
+        .pub-glass-card {
+           cursor: pointer;
+        }
+        .btn-favorite-active, .minimal-visit-btn {
+           position: relative;
+           z-index: 2;
+        }
+      `}</style>
+      
+      {selectedCompany && (
+        <CompanyProfileModal 
+          company={selectedCompany} 
+          onClose={() => setSelectedCompany(null)} 
+        />
+      )}
 
+      <div className="container-fluid py-4">
         {favoriteItems.length > 0 ? (
           <div className="row g-3">
             {favoriteItems.map((pub, idx) => {
@@ -62,7 +79,7 @@ const Favorites = () => {
 
               return (
                 <div key={idx} className="col-xl-3 col-lg-4 col-md-6">
-                  <div className="pub-glass-card h-100">
+                  <div className="pub-glass-card h-100" onClick={() => setSelectedCompany(pub)}>
                     <div className="pub-card-header d-flex justify-content-between align-items-center mb-3">
                       <div className="user-info d-flex align-items-center gap-2">
                         <img
@@ -105,7 +122,13 @@ const Favorites = () => {
                         </span>
 
                         <div className="d-flex align-items-center gap-2">
-                          <button className="btn-favorite-active" onClick={() => removeFavorite(pub.id)}>
+                          <button 
+                            className="btn-favorite-active" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              removeFavorite(pub.id);
+                            }}
+                          >
                             <BsHeartFill size={16} />
                           </button>
                           {pub.link && (
@@ -114,6 +137,7 @@ const Favorites = () => {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="minimal-visit-btn"
+                              onClick={(e) => e.stopPropagation()}
                             >
                               Visit Site
                             </a>

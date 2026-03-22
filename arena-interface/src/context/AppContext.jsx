@@ -8,6 +8,14 @@ export const AppProvider = ({ children }) => {
     return saved === "true" || false;
   });
 
+  const [textSize, setTextSize] = useState(() => {
+    return localStorage.getItem("text_size") || "medium";
+  });
+
+  const [language, setLanguage] = useState(() => {
+    return localStorage.getItem("language") || "en";
+  });
+
   const [user, setUser] = useState(() => {
     const access = localStorage.getItem("access_token");
     const userType = localStorage.getItem("user_type");
@@ -25,6 +33,16 @@ export const AppProvider = ({ children }) => {
       document.documentElement.classList.remove("dark-mode");
     }
   }, [isDarkMode]);
+
+  useEffect(() => {
+    localStorage.setItem("text_size", textSize);
+    document.documentElement.classList.remove("text-small", "text-medium", "text-large");
+    document.documentElement.classList.add(`text-${textSize}`);
+  }, [textSize]);
+
+  useEffect(() => {
+    localStorage.setItem("language", language);
+  }, [language]);
 
   const toggleTheme = () => setIsDarkMode((prev) => !prev);
 
@@ -45,6 +63,10 @@ export const AppProvider = ({ children }) => {
       value={{
         isDarkMode,
         toggleTheme,
+        textSize,
+        setTextSize,
+        language,
+        setLanguage,
         user,
         login,
         logout,
