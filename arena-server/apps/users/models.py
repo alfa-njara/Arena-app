@@ -28,7 +28,7 @@ class Company(AbstractBaseUser, PermissionsMixin):
     website = models.URLField(blank=True)
     description = models.CharField(max_length=500, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
-    logo_url = models.URLField(blank=True, null=True)
+    logo_url = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 

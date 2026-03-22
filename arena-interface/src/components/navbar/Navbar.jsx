@@ -37,7 +37,8 @@ const Navbar = ({ query, setQuery, showSearch = true }) => {
   return (
     <>
       <nav
-        className={`navbar border-bottom sticky-top shadow-sm main-navbar ${isDarkMode ? "navbar-dark bg-dark border-secondary" : "bg-white"}`}
+        className={`navbar border-bottom sticky-top shadow-sm main-navbar ${isDarkMode ? "navbar-dark border-secondary" : ""}`}
+        style={{ backgroundColor: isDarkMode ? "var(--bg-main)" : "#fff" }}
       >
         <div className="container-fluid d-flex align-items-center justify-content-between h-100 px-lg-5">
           <div className="d-flex align-items-center flex-shrink-0" style={{ minWidth: "150px" }}>

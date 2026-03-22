@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import api from "../../api";
 import toast from "react-hot-toast";
 import {
@@ -29,6 +29,8 @@ const ContributorProfile = () => {
   const [profile, setProfile] = useState(DEFAULT_PROFILE);
   const [tempProfile, setTempProfile] = useState(DEFAULT_PROFILE);
   const [isEditing, setIsEditing] = useState(false);
+  const [logoFile, setLogoFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchProfile();
@@ -50,6 +52,7 @@ const ContributorProfile = () => {
       setTempProfile(data);
     } catch (err) {
       console.error("Failed to load profile", err);
+      toast.error("Failed to load profile");
     }
   };
 
@@ -57,18 +60,39 @@ const ContributorProfile = () => {
     setTempProfile({ ...tempProfile, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      // Create a preview URL
+      setTempProfile({ ...tempProfile, logoUrl: URL.createObjectURL(file) });
+    }
+  };
+
   const handleUpdate = async () => {
     try {
-      await api.put("/companies/me/", {
-        name: tempProfile.companyName,
-        phone_number: tempProfile.phone,
-        contribution_type: tempProfile.category,
-        website: tempProfile.website,
-        description: tempProfile.description,
-        location: tempProfile.location,
-        logo_url: tempProfile.logoUrl,
-      });
-      setProfile(tempProfile);
+      const formData = new FormData();
+      formData.append("name", tempProfile.companyName);
+      formData.append("phone_number", tempProfile.phone);
+      formData.append("contribution_type", tempProfile.category);
+      formData.append("website", tempProfile.website);
+      formData.append("description", tempProfile.description);
+      formData.append("location", tempProfile.location);
+      
+      if (logoFile) {
+        formData.append("logo_url", logoFile); // Backend should handle this field as a file
+      }
+
+      const res = await api.patch("/companies/me/", formData);
+      
+      // Update local state with the actual URL returned from server if available
+      const updatedData = {
+        ...tempProfile,
+        logoUrl: res.data.logo_url || tempProfile.logoUrl
+      };
+      
+      setProfile(updatedData);
+      setLogoFile(null);
       setIsEditing(false);
       toast.success("Profile updated successfully!");
     } catch (err) {
@@ -79,6 +103,7 @@ const ContributorProfile = () => {
 
   const handleCancel = () => {
     setTempProfile(profile);
+    setLogoFile(null);
     setIsEditing(false);
   };
 
@@ -186,15 +211,34 @@ const ContributorProfile = () => {
                     </div>
                     <div className="col-12">
                       <label className="form-label fw-semibold small text-muted">
-                        Logo URL
+                        Logo Image
                       </label>
-                      <input
-                        type="url"
-                        name="logoUrl"
-                        className="form-control custom-input"
-                        value={tempProfile.logoUrl || ""}
-                        onChange={handleChange}
-                      />
+                      <div className="d-flex align-items-center gap-3">
+                        <div 
+                          className="rounded-circle bg-light d-flex align-items-center justify-content-center overflow-hidden"
+                          style={{ width: "60px", height: "60px", border: "2px dashed #ccc" }}
+                        >
+                          {tempProfile.logoUrl ? (
+                            <img src={tempProfile.logoUrl} className="w-100 h-100 object-fit-cover" alt="Logo preview" />
+                          ) : (
+                            <FaCamera className="text-muted opacity-50" />
+                          )}
+                        </div>
+                        <input
+                          type="file"
+                          ref={fileInputRef}
+                          className="d-none"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                        />
+                        <button 
+                          type="button" 
+                          className="btn btn-sm btn-outline-primary rounded-3"
+                          onClick={() => fileInputRef.current.click()}
+                        >
+                          Upload new logo
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ) : (

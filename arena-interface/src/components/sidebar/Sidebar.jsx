@@ -9,13 +9,15 @@ const Sidebar = () => {
   const navigate = useNavigate();
   const { isDarkMode, logout } = useAppContext();
 
+  const userType = localStorage.getItem("user_type");
+
   const items = [
     { id: "home", path: "/home", icon: <RiHome9Line size={24} />, label: "Home" },
-    { id: "dashboard", path: "/contributor/dashboard", icon: <LuLayoutDashboard size={24} />, label: "Dashboard" },
+    { id: "dashboard", path: "/contributor/dashboard", icon: <LuLayoutDashboard size={24} />, label: "Dashboard", roles: ["contributor"] },
     { id: "profile", path: "/contributor/profile", icon: <BsPerson size={24} />, label: "Profile" },
     { id: "favorites", path: "/favorites", icon: <GrFavorite size={24} />, label: "Favorites" },
     { id: "settings", path: "/settings", icon: <BsGear size={24} />, label: "Settings" },
-  ];
+  ].filter(item => !item.roles || item.roles.includes(userType));
 
   const handleLogout = () => {
     logout();

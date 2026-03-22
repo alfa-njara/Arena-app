@@ -4,16 +4,31 @@ import toast from "react-hot-toast";
 
 const CompleteProfileModal = ({ onComplete }) => {
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    logo_url: "",
-    description: "",
-  });
+  const [description, setDescription] = useState("");
+  const [logoFile, setLogoFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!logoFile) {
+      toast.error("Please upload a logo to continue.");
+      return;
+    }
     setLoading(true);
     try {
-      await api.patch("/companies/me/", formData);
+      const formPayload = new FormData();
+      formPayload.append("description", description);
+      formPayload.append("logo_url", logoFile);
+
+      await api.patch("/companies/me/", formPayload);
       toast.success("Profile updated successfully!");
       onComplete();
     } catch (error) {
@@ -28,24 +43,30 @@ const CompleteProfileModal = ({ onComplete }) => {
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Complete Your Profile</h2>
-        <p>Welcome to Arena! Please provide a logo URL and a description for your company to continue.</p>
+        <p>Welcome to Arena! Please provide a logo and a description for your company to continue.</p>
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Logo URL</label>
-            <input
-              type="url"
-              placeholder="https://example.com/logo.png"
-              value={formData.logo_url}
-              onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
-              required
-            />
+            <label>Upload Logo</label>
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "10px" }}>
+              {previewUrl && (
+                <div style={{ width: "80px", height: "80px", borderRadius: "10px", overflow: "hidden", border: "1px solid var(--border-color)" }}>
+                  <img src={previewUrl} alt="Preview" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                </div>
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                required
+              />
+            </div>
           </div>
           <div className="form-group">
             <label>Company Description</label>
             <textarea
               placeholder="Tell us about your company..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               required
               rows="4"
             />

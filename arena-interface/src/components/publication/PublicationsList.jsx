@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PublicationsList.css";
 import { BsTelephone, BsHeart, BsHeartFill, BsGrid, BsFire, BsClock } from "react-icons/bs";
+import toast from "react-hot-toast";
 import api from "../../api";
 import { useAppContext } from "../../context/AppContext";
 
@@ -52,6 +53,7 @@ const PublicationsList = () => {
       }));
       setPublications(mapped);
     } catch (err) {
+      toast.error("Failed to load publications");
       console.error(err);
     }
   };
@@ -62,13 +64,14 @@ const PublicationsList = () => {
       const favSet = new Set(res.data.map(f => f.company));
       setFavorites(favSet);
     } catch (err) {
+      toast.error("Failed to load favorites");
       console.error(err);
     }
   };
 
   const toggleFavorite = async (companyId) => {
     if (localStorage.getItem("user_type") !== "user") {
-      alert("Only users can favorite companies");
+      toast.error("Only users can favorite companies");
       return;
     }
 
@@ -83,10 +86,11 @@ const PublicationsList = () => {
         const newFavs = new Set(favorites);
         newFavs.add(companyId);
         setFavorites(newFavs);
+        toast.success("Added to favorites");
       }
     } catch (err) {
       console.error(err);
-      alert("Error updating favorite");
+      toast.error("Error updating favorite");
     }
   };
 

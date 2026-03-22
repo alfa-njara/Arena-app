@@ -12,6 +12,8 @@ import AuthArena from "./components/log_sign/AuthArena";
 import LandingPage from "./pages/landing/LandingPage";
 import { AppProvider } from "./context/AppContext";
 
+import ProtectedRoute from "./components/auth/ProtectedRoute";
+
 function App() {
   return (
     <AppProvider>
@@ -21,22 +23,29 @@ function App() {
           {/* Redirection automatique vers /landing si on arrive sur "/" */}
           <Route path="/" element={<Navigate to="/landing" replace />} />
 
-          {/* Pages avec Navbar + Sidebar */}
-          <Route element={<Layout />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/contributor/profile" element={<ContributorProfile />} />
-            <Route path="/contributor/dashboard" element={<Dashboard />} />
-            <Route path="/favorites" element={<Favorites />} />
-            <Route path="/settings" element={<Settings />} />
+          {/* Pages avec Navbar + Sidebar - Protected */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<Layout />}>
+              <Route path="/home" element={<Home />} />
+              <Route path="/contributor/profile" element={<ContributorProfile />} />
+              <Route path="/favorites" element={<Favorites />} />
+              <Route path="/settings" element={<Settings />} />
+              
+              {/* Dashboard only for contributors */}
+              <Route element={<ProtectedRoute allowedRoles={["contributor"]} />}>
+                <Route path="/contributor/dashboard" element={<Dashboard />} />
+              </Route>
+            </Route>
+
+            {/* Fullscreen Pages - Protected */}
+            <Route path="/choice" element={<Choice />} />
+            <Route path="/contributor/form" element={<AuthArena />} />
           </Route>
 
-          {/* Pages plein écran */}
-          <Route path="/choice" element={<Choice />} />
-          <Route path="/contributor/form" element={<AuthArena />} />
           <Route path="/landing" element={<LandingPage />} />
 
           {/* Route inconnue */}
-          <Route path="*" element={<Navigate to="/home" replace />} />
+          <Route path="*" element={<Navigate to="/landing" replace />} />
         </Routes>
       </BrowserRouter>
     </AppProvider>

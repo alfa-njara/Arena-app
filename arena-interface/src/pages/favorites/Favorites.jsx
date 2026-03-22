@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "../../components/publication/PublicationsList.css";
 import { BsTelephone, BsHeartFill } from "react-icons/bs";
 import api from "../../api";
+import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
 
 // Uniformisation des clés sur 'color'
@@ -45,7 +46,7 @@ const Favorites = () => {
       setFavoriteItems(favoriteItems.filter(item => item.id !== companyId));
     } catch (err) {
       console.error(err);
-      alert("Error removing favorite");
+      toast.error("Error removing favorite");
     }
   };
 

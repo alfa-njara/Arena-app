@@ -82,8 +82,8 @@ const AuthArena = ({ initialIsLogin = true }) => {
       }
     } catch (error) {
       console.error(error);
-      const msg = error.response?.data ? JSON.stringify(error.response.data) : "Server error";
-      toast.error("Error: " + msg);
+      const msg = error.response?.data ? JSON.stringify(error.response.data) : "An error occurred";
+      toast.error(msg);
     }
   };
 
