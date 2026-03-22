@@ -26,9 +26,7 @@ const PublicationsList = () => {
 
   useEffect(() => {
     fetchPublications();
-    if (localStorage.getItem("user_type") === "user") {
-      fetchFavorites();
-    }
+    fetchFavorites();
   }, []);
 
   const fetchPublications = async () => {
@@ -52,7 +50,7 @@ const PublicationsList = () => {
 
   const fetchFavorites = async () => {
     try {
-      const res = await api.get("/customers/favorites/");
+      const res = await api.get("/favorites/");
       const favSet = new Set(res.data.map(f => f.company));
       setFavorites(favSet);
     } catch (err) {
@@ -62,19 +60,14 @@ const PublicationsList = () => {
   };
 
   const toggleFavorite = async (companyId) => {
-    if (localStorage.getItem("user_type") !== "user") {
-      toast.error("Only users can favorite companies");
-      return;
-    }
-
     try {
       if (favorites.has(companyId)) {
-        await api.delete(`/customers/favorites/${companyId}/`);
+        await api.delete(`/favorites/${companyId}/`);
         const newFavs = new Set(favorites);
         newFavs.delete(companyId);
         setFavorites(newFavs);
       } else {
-        await api.post("/customers/favorites/", { company: companyId });
+        await api.post("/favorites/", { company: companyId });
         const newFavs = new Set(favorites);
         newFavs.add(companyId);
         setFavorites(newFavs);
@@ -82,7 +75,11 @@ const PublicationsList = () => {
       }
     } catch (err) {
       console.error(err);
-      toast.error("Error updating favorite");
+      if (err.response && err.response.data && err.response.data.detail) {
+        toast.error(err.response.data.detail);
+      } else {
+        toast.error("Error updating favorite");
+      }
     }
   };
 

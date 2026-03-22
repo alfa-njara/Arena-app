@@ -24,7 +24,7 @@ const Favorites = () => {
 
   const fetchFavorites = async () => {
     try {
-      const res = await api.get("/customers/favorites/");
+      const res = await api.get("/favorites/");
       const mapped = res.data.map(item => ({
         id: item.company,
         companyName: item.company_details?.name || "Company",
@@ -42,7 +42,7 @@ const Favorites = () => {
 
   const removeFavorite = async (companyId) => {
     try {
-      await api.delete(`/customers/favorites/${companyId}/`);
+      await api.delete(`/favorites/${companyId}/`);
       setFavoriteItems(favoriteItems.filter(item => item.id !== companyId));
     } catch (err) {
       console.error(err);

@@ -112,5 +112,5 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Favorite
-        fields = ["id", "customer", "company", "company_details", "created_at"]
-        read_only_fields = ["customer"]
+        fields = ["id", "customer", "company_user", "company", "company_details", "created_at"]
+        read_only_fields = ["customer", "company_user"]

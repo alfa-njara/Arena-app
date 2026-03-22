@@ -71,25 +71,45 @@ class FavoriteListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Favorite.objects.filter(customer=self.request.user)
+        user = self.request.user
+        if hasattr(user, 'full_name'):
+            return Favorite.objects.filter(customer=user)
+        return Favorite.objects.filter(company_user=user)
 
     def perform_create(self, serializer):
-        serializer.save(customer=self.request.user)
+        user = self.request.user
+        if hasattr(user, 'full_name'):
+            serializer.save(customer=user)
+        else:
+            serializer.save(company_user=user)
 
     def create(self, request, *args, **kwargs):
-        # Prevent duplicate favorites
         company_id = request.data.get('company')
-        if Favorite.objects.filter(customer=request.user, company_id=company_id).exists():
-            return Response({"detail": "Already favorited."}, status=400)
+        user = request.user
+        
+        # Prevent self-favoriting
+        if hasattr(user, 'name') and str(user.id) == str(company_id):
+            return Response({"detail": "You cannot favorite your own company."}, status=400)
+
+        # Prevent duplicate favorites
+        if hasattr(user, 'full_name'):
+            if Favorite.objects.filter(customer=user, company_id=company_id).exists():
+                return Response({"detail": "Already favorited."}, status=400)
+        else:
+            if Favorite.objects.filter(company_user=user, company_id=company_id).exists():
+                return Response({"detail": "Already favorited."}, status=400)
+                
         return super().create(request, *args, **kwargs)
 
 class FavoriteDeleteView(generics.DestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Favorite.objects.filter(customer=self.request.user)
+        user = self.request.user
+        if hasattr(user, 'full_name'):
+            return Favorite.objects.filter(customer=user)
+        return Favorite.objects.filter(company_user=user)
     
     def get_object(self):
-        # We delete by company ID in the URL
         company_id = self.kwargs.get('company_id')
         return generics.get_object_or_404(self.get_queryset(), company_id=company_id)

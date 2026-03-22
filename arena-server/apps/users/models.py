@@ -103,12 +103,11 @@ class Customer(AbstractBaseUser, PermissionsMixin):
 # Favorite Model
 # ----------------------------
 class Favorite(models.Model):
-    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="favorites")
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="favorites", null=True, blank=True)
+    company_user = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_favorites", null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="favorited_by")
     created_at = models.DateTimeField(auto_now_add=True)
 
-    class Meta:
-        unique_together = ('customer', 'company')
-
     def __str__(self):
-        return f"{self.customer.full_name} -> {self.company.name}"
+        user_name = self.customer.full_name if self.customer else (self.company_user.name if self.company_user else "Unknown")
+        return f"{user_name} -> {self.company.name}"

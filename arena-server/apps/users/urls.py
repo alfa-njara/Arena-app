@@ -25,6 +25,6 @@ urlpatterns = [
     path("companies/stats/", CompanyStatsView.as_view(), name="company-stats"),
 
     # Favorites endpoints
-    path("customers/favorites/", FavoriteListCreateView.as_view(), name="favorite-list-create"),
-    path("customers/favorites/<int:company_id>/", FavoriteDeleteView.as_view(), name="favorite-delete"),
+    path("favorites/", FavoriteListCreateView.as_view(), name="favorite-list-create"),
+    path("favorites/<int:company_id>/", FavoriteDeleteView.as_view(), name="favorite-delete"),
 ]
