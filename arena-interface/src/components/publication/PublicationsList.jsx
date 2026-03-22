@@ -7,25 +7,17 @@ import api from "../../api";
 import { useAppContext } from "../../context/AppContext";
 
 const typeStyles = {
-  Shop: { bg: "#e3f2fd", color: "#0d6efd" },
-  Service: { bg: "#f3e5f5", color: "#9c27b0" },
-  Entertainment: { bg: "#fff3e0", color: "#ef6c00" },
-  Education: { bg: "#e8f5e9", color: "#2e7d32" },
-  Restaurant: { bg: "#ffebee", color: "#c62828" },
-  Health: { bg: "#e0f2f1", color: "#00796b" },
-  Culture: { bg: "#fce4ec", color: "#ad1457" },
-  Tech: { bg: "#e8eaf6", color: "#283593" },
-  Default: { bg: "#f8f9fa", color: "#6c757d" },
+  "Shop": { bg: "#e3f2fd", color: "#0d6efd" },
+  "Professional service": { bg: "#f3e5f5", color: "#9c27b0" },
+  "Entertainment & Events": { bg: "#fff3e0", color: "#ef6c00" },
+  "Education / Training": { bg: "#e8f5e9", color: "#2e7d32" },
+  "Restaurant / Food": { bg: "#ffebee", color: "#c62828" },
+  "Health & Wellness": { bg: "#e0f2f1", color: "#00796b" },
+  "Other": { bg: "#f8f9fa", color: "#6c757d" },
+  "Default": { bg: "#f8f9fa", color: "#6c757d" }
 };
 
-// Filter categories
-const categories = [
-  "All",
-  "Recent",
-  "Popular",
-  ...Object.keys(typeStyles).filter((t) => t !== "Default"),
-];
-
+// We will dynamically compute categories based on fetched data inside the component.
 const PublicationsList = () => {
   const { isDarkMode } = useAppContext();
   const [activeFilter, setActiveFilter] = useState("All");
@@ -138,9 +130,8 @@ const PublicationsList = () => {
       `}</style>
 
       <div className="container-fluid">
-        {/* HORIZONTAL FILTERS */}
         <div className="filter-bar">
-          {categories.map((cat) => (
+          {["All", "Recent", "Popular", ...Object.keys(typeStyles).filter(t => t !== "Default" && publications.some(p => p.type === t))].map((cat) => (
             <button
               key={cat}
               className={`filter-btn ${activeFilter === cat ? "active" : ""}`}

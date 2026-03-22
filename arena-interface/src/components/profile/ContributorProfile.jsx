@@ -156,9 +156,13 @@ const ContributorProfile = () => {
                         value={tempProfile.category}
                         onChange={handleChange}
                       >
-                        <option value="Shop">Retail Shop</option>
-                        <option value="Service">Professional Service</option>
-                        <option value="Restaurant">Food & Drinks</option>
+                        <option value="Shop">Shop</option>
+                        <option value="Professional service">Professional service</option>
+                        <option value="Entertainment & Events">Entertainment & Events</option>
+                        <option value="Education / Training">Education / Training</option>
+                        <option value="Restaurant / Food">Restaurant / Food</option>
+                        <option value="Health & Wellness">Health & Wellness</option>
+                        <option value="Other">Other</option>
                       </select>
                     </div>
                     <div className="col-md-6">

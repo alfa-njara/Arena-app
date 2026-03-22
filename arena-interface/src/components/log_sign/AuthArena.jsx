@@ -226,16 +226,13 @@ const AuthArena = ({ initialIsLogin = true }) => {
                     required
                   >
                     <option value="">Contribution Type</option>
-                    <option value="shop">Shop</option>
-                    <option value="service">Professional Service</option>
-                    <option value="entertainment">
-                      Entertainment & Events
-                    </option>
-                    <option value="education">Education / Training</option>
-                    <option value="restauration">Restaurant / Food</option>
-                    <option value="art-culture">Art & Culture</option>
-                    <option value="health">Health & Wellness</option>
-                    <option value="other">Other</option>
+                    <option value="Shop">Shop</option>
+                    <option value="Professional service">Professional service</option>
+                    <option value="Entertainment & Events">Entertainment & Events</option>
+                    <option value="Education / Training">Education / Training</option>
+                    <option value="Restaurant / Food">Restaurant / Food</option>
+                    <option value="Health & Wellness">Health & Wellness</option>
+                    <option value="Other">Other</option>
                   </select>
                   <input
                     type="text"
