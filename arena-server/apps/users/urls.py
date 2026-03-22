@@ -3,7 +3,7 @@ from .views import (
     CompanyCreateView, CustomerCreateView,
     CompanyTokenObtainPairView, CustomerTokenObtainPairView,
     CompanyListView, CompanyProfileView, CompanyStatsView,
-    FavoriteListCreateView, FavoriteDeleteView
+    FavoriteListCreateView, FavoriteDeleteView, CompanyVisitCreateView
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -23,6 +23,7 @@ urlpatterns = [
     path("companies/list/", CompanyListView.as_view(), name="company-list"),
     path("companies/me/", CompanyProfileView.as_view(), name="company-me"),
     path("companies/stats/", CompanyStatsView.as_view(), name="company-stats"),
+    path("companies/<int:company_id>/visit/", CompanyVisitCreateView.as_view(), name="company-visit"),
 
     # Favorites endpoints
     path("favorites/", FavoriteListCreateView.as_view(), name="favorite-list-create"),

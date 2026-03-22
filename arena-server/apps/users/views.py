@@ -44,27 +44,88 @@ class CompanyProfileView(generics.RetrieveUpdateAPIView):
         return self.request.user # This assumes Token authentication resolves to Company
 
 class CompanyStatsView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        now = __import__('datetime').datetime.now()
+        user = request.user
+        if not hasattr(user, 'name'):
+            return Response({"error": "Only companies can view stats."}, status=403)
+            
+        from django.utils import timezone
+        from .models import CompanyVisit, Favorite
+        from datetime import timedelta
+        
+        now = timezone.now()
         data = []
-        for i in range(60, -1, -1):
-            d = now - __import__('datetime').timedelta(days=i)
+        for i in range(30, -1, -1):
+            d = now - timedelta(days=i)
+            views = CompanyVisit.objects.filter(company=user, created_at__date=d.date()).count()
+            favorites = Favorite.objects.filter(company=user, created_at__date=d.date()).count()
+            
             timeframe = "year"
             if i <= 30: timeframe = "month"
             if i <= 7: timeframe = "week"
+            
             data.append({
                 "date": d.strftime("%Y-%m-%d"),
                 "label": d.strftime("%b %d"),
-                "views": __import__('random').randint(0, 500) + (60 - i) * 10,
-                "favorites": __import__('random').randint(0, 50) + (60 - i) * 2,
-                "timeframe": timeframe,
+                "views": views,
+                "favorites": favorites,
+                "timeframe": timeframe
             })
-        return Response(data)
+            
+        recent_favorites = Favorite.objects.filter(company=user).select_related('customer', 'company_user').order_by('-created_at')[:15]
+        recent_visits = CompanyVisit.objects.filter(company=user).select_related('customer', 'company_user').order_by('-created_at')[:15]
+        
+        feed = []
+        for f in recent_favorites:
+            name = f.customer.full_name if f.customer else (f.company_user.name if f.company_user else "Unknown")
+            feed.append({"type": "favorite", "user": name, "date": f.created_at})
+        for v in recent_visits:
+            name = v.customer.full_name if v.customer else (v.company_user.name if v.company_user else "Anonymous")
+            feed.append({"type": "visit", "user": name, "date": v.created_at})
+            
+        feed.sort(key=lambda x: x['date'], reverse=True)
+        feed = feed[:15]
+        
+        for item in feed:
+            item['time_label'] = item['date'].strftime("%H:%M")
+            item['label'] = item['date'].strftime("%b %d")
+            del item['date']
 
-# --- Favorite APIs ---
-from .models import Favorite
+        total_views = CompanyVisit.objects.filter(company=user).count()
+        total_favs = Favorite.objects.filter(company=user).count()
+        
+        return Response({
+            "chart_data": data,
+            "recent_activity": feed,
+            "total_views": total_views,
+            "total_favorites": total_favs,
+            "growth": "+0%"
+        })
+
+# --- Visit & Favorite APIs ---
+from .models import Favorite, CompanyVisit
+
+class CompanyVisitCreateView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request, company_id):
+        from rest_framework import generics
+        from .models import Company
+        company = generics.get_object_or_404(Company, id=company_id)
+        user = request.user
+        
+        if getattr(user, 'is_authenticated', False):
+            if hasattr(user, 'full_name'):
+                CompanyVisit.objects.create(company=company, customer=user)
+            else:
+                if str(user.id) != str(company_id):
+                    CompanyVisit.objects.create(company=company, company_user=user)
+        else:
+            CompanyVisit.objects.create(company=company)
+            
+        return Response({"status": "Visit logged"})
 
 class FavoriteListCreateView(generics.ListCreateAPIView):
     serializer_class = FavoriteSerializer

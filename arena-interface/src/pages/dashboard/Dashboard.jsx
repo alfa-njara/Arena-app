@@ -25,20 +25,30 @@ const Dashboard = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [metric, setMetric] = useState("views");
   const [timeframe, setTimeframe] = useState("month");
-  const [massiveData, setMassiveData] = useState([]);
+  const [stats, setStats] = useState({
+    chart_data: [],
+    recent_activity: [],
+    total_views: 0,
+    total_favorites: 0,
+    growth: "+0%"
+  });
 
   useEffect(() => {
     api.get("/companies/stats/")
-       .then(res => setMassiveData(res.data))
+       .then(res => {
+         if (res.data && res.data.chart_data) {
+           setStats(res.data);
+         }
+       })
        .catch(err => console.error("Error fetching stats:", err));
   }, []);
 
   const processedChartData = useMemo(() => {
     // Filtrage par période
-    let filtered = massiveData;
-    if (timeframe === "week") filtered = massiveData.slice(-7);
-    else if (timeframe === "month") filtered = massiveData.slice(-30);
-    else filtered = massiveData;
+    let filtered = stats.chart_data;
+    if (timeframe === "week") filtered = stats.chart_data.slice(-7);
+    else if (timeframe === "month") filtered = stats.chart_data.slice(-30);
+    else filtered = stats.chart_data;
 
     // Tri
     return [...filtered].sort((a, b) => {
@@ -66,25 +76,25 @@ const Dashboard = () => {
           {[
             {
               label: "Views",
-              value: "24,592",
-              trend: "+18%",
-              isUp: true,
+              value: stats.total_views.toLocaleString(),
+              trend: stats.growth,
+              isUp: !stats.growth.includes("-"),
               icon: <LuEye />,
               color: "#0d6efd",
             },
             {
               label: "Hearts",
-              value: "3,102",
-              trend: "+12%",
+              value: stats.total_favorites.toLocaleString(),
+              trend: "N/A",  // Simplification
               isUp: true,
               icon: <LuHeart />,
               color: "#dc3545",
             },
             {
               label: "Growth",
-              value: "14.2%",
-              trend: "+2.1%",
-              isUp: true,
+              value: stats.growth,
+              trend: "vs last 30d",
+              isUp: !stats.growth.includes("-"),
               icon: <LuTrendingUp />,
               color: "#198754",
             },
@@ -251,7 +261,7 @@ const Dashboard = () => {
                 Live Activity
               </h6>
               <div className="flex-grow-1 overflow-auto pe-2 custom-scroll">
-                {massiveData.slice(0, 15).map((item, idx) => (
+                {stats.recent_activity.length > 0 ? stats.recent_activity.map((item, idx) => (
                   <div
                     key={idx}
                     className="d-flex align-items-center gap-3 mb-3 p-2 rounded-4 hover-effect"
@@ -262,13 +272,13 @@ const Dashboard = () => {
                         width: "36px",
                         height: "36px",
                         background:
-                          idx % 3 === 0
+                          item.type === "visit"
                             ? "rgba(13, 110, 253, 0.1)"
                             : "rgba(220, 53, 69, 0.1)",
-                        color: idx % 3 === 0 ? "#0d6efd" : "#dc3545",
+                        color: item.type === "visit" ? "#0d6efd" : "#dc3545",
                       }}
                     >
-                      {idx % 3 === 0 ? (
+                      {item.type === "visit" ? (
                         <LuUser size={16} />
                       ) : (
                         <LuHeart size={16} />
@@ -278,14 +288,16 @@ const Dashboard = () => {
                       <p
                         className={`mb-0 fw-bold text-truncate small ${isDarkMode ? "text-white" : "text-dark"}`}
                       >
-                        {idx % 3 === 0 ? "Visitor" : "Contributor"} interacting
+                        {item.user}
                       </p>
                       <span className="text-muted x-small">
-                        {item.label} • {12 + (idx % 12)}:00
+                        {item.type === 'favorite' ? 'Favorited you' : 'Viewed your profile'} • {item.label} {item.time_label}
                       </span>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <p className="text-muted text-center mt-4 small">No recent activity yet.</p>
+                )}
               </div>
             </div>
           </div>

@@ -111,3 +111,16 @@ class Favorite(models.Model):
     def __str__(self):
         user_name = self.customer.full_name if self.customer else (self.company_user.name if self.company_user else "Unknown")
         return f"{user_name} -> {self.company.name}"
+
+# ----------------------------
+# Visit Tracking Model
+# ----------------------------
+class CompanyVisit(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="visits", null=True, blank=True)
+    company_user = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_visits", null=True, blank=True)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="visited_by")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        user_name = self.customer.full_name if self.customer else (self.company_user.name if self.company_user else "Anonymous")
+        return f"{user_name} visited {self.company.name}"
