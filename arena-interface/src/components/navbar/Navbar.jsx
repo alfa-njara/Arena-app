@@ -9,8 +9,11 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { useAppContext } from "../../context/AppContext";
 
 const Navbar = ({ query, setQuery, showSearch = true }) => {
-  const { isDarkMode, toggleTheme } = useAppContext();
+  const { isDarkMode, toggleTheme, searchQuery, setSearchQuery } = useAppContext();
   const location = useLocation();
+
+  const finalQuery = query || searchQuery;
+  const finalSetQuery = setQuery || setSearchQuery;
 
   const getBadgeContent = () => {
     const path = location.pathname;
@@ -53,8 +56,8 @@ const Navbar = ({ query, setQuery, showSearch = true }) => {
                 <input
                   type="text"
                   placeholder="Search..."
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
+                  value={finalQuery}
+                  onChange={(e) => finalSetQuery(e.target.value)}
                   className={`search-input ${isDarkMode ? "search-dark" : "search-light"}`}
                 />
               </div>

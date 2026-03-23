@@ -20,7 +20,7 @@ const typeStyles = {
 
 // We will dynamically compute categories based on fetched data inside the component.
 const PublicationsList = () => {
-  const { isDarkMode } = useAppContext();
+  const { isDarkMode, searchQuery } = useAppContext();
   const [activeFilter, setActiveFilter] = useState("All");
   const [publications, setPublications] = useState([]);
   const [favorites, setFavorites] = useState(new Set());
@@ -85,6 +85,28 @@ const PublicationsList = () => {
       }
     }
   };
+
+  const filteredPublications = publications.filter((pub) => {
+    const isFilteredByCategory = 
+      activeFilter === "All" ||
+      activeFilter === "Recent" ||
+      activeFilter === "Popular" ||
+      pub.type === activeFilter;
+
+    if (!isFilteredByCategory) return false;
+
+    if (!searchQuery) return true;
+
+    const lowerQuery = searchQuery.toLowerCase();
+    return (
+      pub.companyName?.toLowerCase().includes(lowerQuery) ||
+      pub.type?.toLowerCase().includes(lowerQuery) ||
+      pub.description?.toLowerCase().includes(lowerQuery) ||
+      pub.number?.toLowerCase().includes(lowerQuery) ||
+      pub.location?.toLowerCase().includes(lowerQuery) ||
+      pub.link?.toLowerCase().includes(lowerQuery)
+    );
+  });
 
   return (
     <div className={`publications-page ${isDarkMode ? "dark-mode" : ""}`}>
@@ -163,15 +185,7 @@ const PublicationsList = () => {
 
         {/* LISTING */}
         <div className="row g-3">
-          {publications
-            .filter(
-              (pub) =>
-                activeFilter === "All" ||
-                activeFilter === "Recent" ||
-                activeFilter === "Popular" ||
-                pub.type === activeFilter,
-            )
-            .map((pub, idx) => {
+          {filteredPublications.map((pub, idx) => {
               const style = typeStyles[pub.type] || typeStyles.Default;
               return (
                 <div key={idx} className="col-xl-3 col-lg-4 col-md-6">

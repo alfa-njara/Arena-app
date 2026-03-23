@@ -25,6 +25,8 @@ export const AppProvider = ({ children }) => {
     return null;
   });
 
+  const [searchQuery, setSearchQuery] = useState("");
+
   useEffect(() => {
     localStorage.setItem("dark_mode", isDarkMode);
     if (isDarkMode) {
@@ -70,6 +72,8 @@ export const AppProvider = ({ children }) => {
         user,
         login,
         logout,
+        searchQuery,
+        setSearchQuery,
       }}
     >
       {children}
