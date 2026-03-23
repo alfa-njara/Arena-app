@@ -34,7 +34,8 @@ const Favorites = () => {
         type: item.company_details?.contribution_type || "Shop",
         link: item.company_details?.website || "",
         description: item.company_details?.description || "",
-        logo: item.company_details?.logo_url || null
+        logo: item.company_details?.logo_url || null,
+        location: item.company_details?.location || ""
       }));
       setFavoriteItems(mapped);
     } catch (err) {

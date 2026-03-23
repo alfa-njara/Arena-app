@@ -27,7 +27,7 @@ const Layout = () => {
     }
     try {
       const res = await api.get("/companies/me/");
-      if (!res.data.logo_url || !res.data.description) {
+      if (!res.data.logo_url || !res.data.description || !res.data.location || !res.data.contribution_type) {
         setShowCompleteProfile(true);
       }
     } catch (err) {

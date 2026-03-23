@@ -41,7 +41,8 @@ const PublicationsList = () => {
         type: item.contribution_type,
         link: item.website,
         description: item.description,
-        logo: item.logo_url
+        logo: item.logo_url,
+        location: item.location
       }));
       setPublications(mapped);
     } catch (err) {

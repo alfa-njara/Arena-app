@@ -64,6 +64,18 @@ const CompanyProfileModal = ({ company, onClose }) => {
                 </div>
               </a>
             )}
+
+            {company.location && (
+              <div className="contact-item">
+                <div className="icon-wrapper bg-warning-light text-warning">
+                  <BsGeoAlt size={20} />
+                </div>
+                <div>
+                  <small>Location</small>
+                  <strong>{company.location}</strong>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -249,6 +261,8 @@ const CompanyProfileModal = ({ company, onClose }) => {
         .text-primary { color: #2563eb; }
         .bg-success-light { background: rgba(16, 185, 129, 0.1); }
         .text-success { color: #10b981; }
+        .bg-warning-light { background: rgba(245, 158, 11, 0.1); }
+        .text-warning { color: #f59e0b; }
 
         .contact-item small {
           display: block;

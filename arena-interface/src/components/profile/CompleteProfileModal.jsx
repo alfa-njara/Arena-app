@@ -5,6 +5,9 @@ import toast from "react-hot-toast";
 const CompleteProfileModal = ({ onComplete }) => {
   const [loading, setLoading] = useState(false);
   const [description, setDescription] = useState("");
+  const [location, setLocation] = useState("");
+  const [website, setWebsite] = useState("");
+  const [contributionType, setContributionType] = useState("");
   const [logoFile, setLogoFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -31,6 +34,9 @@ const CompleteProfileModal = ({ onComplete }) => {
     try {
       const formPayload = new FormData();
       formPayload.append("description", description);
+      formPayload.append("location", location);
+      formPayload.append("website", website);
+      formPayload.append("contribution_type", contributionType);
       formPayload.append("logo_url", logoFile);
 
       await api.patch("/companies/me/", formPayload);
@@ -67,13 +73,49 @@ const CompleteProfileModal = ({ onComplete }) => {
             </div>
           </div>
           <div className="form-group">
+            <label>Location</label>
+            <input
+              type="text"
+              placeholder="Where is your company located?"
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label>Website or Social Link</label>
+            <input
+              type="url"
+              placeholder="https://..."
+              value={website}
+              onChange={(e) => setWebsite(e.target.value)}
+            />
+          </div>
+          <div className="form-group">
+            <label>Contribution Type</label>
+            <select
+              value={contributionType}
+              onChange={(e) => setContributionType(e.target.value)}
+              required
+            >
+              <option value="">Select a type...</option>
+              <option value="Shop">Shop</option>
+              <option value="Professional service">Professional service</option>
+              <option value="Entertainment & Events">Entertainment & Events</option>
+              <option value="Education / Training">Education / Training</option>
+              <option value="Restaurant / Food">Restaurant / Food</option>
+              <option value="Health & Wellness">Health & Wellness</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div className="form-group">
             <label>Company Description</label>
             <textarea
               placeholder="Tell us about your company..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               required
-              rows="4"
+              rows="3"
             />
           </div>
           <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
@@ -115,6 +157,8 @@ const CompleteProfileModal = ({ onComplete }) => {
           border-radius: 20px;
           width: 100%;
           max-width: 500px;
+          max-height: 90vh;
+          overflow-y: auto;
           box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
           border: 1px solid var(--border-color);
         }
