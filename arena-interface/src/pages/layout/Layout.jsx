@@ -22,6 +22,9 @@ const Layout = () => {
   }, []);
 
   const checkProfile = async () => {
+    if (sessionStorage.getItem("skip_complete_profile") === "true") {
+      return;
+    }
     try {
       const res = await api.get("/companies/me/");
       if (!res.data.logo_url || !res.data.description) {

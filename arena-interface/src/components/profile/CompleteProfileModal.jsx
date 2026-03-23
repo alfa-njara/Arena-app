@@ -16,6 +16,11 @@ const CompleteProfileModal = ({ onComplete }) => {
     }
   };
 
+  const handleSkip = () => {
+    sessionStorage.setItem("skip_complete_profile", "true");
+    onComplete();
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!logoFile) {
@@ -71,9 +76,20 @@ const CompleteProfileModal = ({ onComplete }) => {
               rows="4"
             />
           </div>
-          <button type="submit" disabled={loading}>
-            {loading ? "Saving..." : "Save and Continue"}
-          </button>
+          <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
+            <button type="submit" disabled={loading} style={{ flex: 2 }}>
+              {loading ? "Saving..." : "Save and Continue"}
+            </button>
+            <button 
+              type="button" 
+              onClick={handleSkip} 
+              disabled={loading} 
+              className="btn-skip"
+              style={{ flex: 1 }}
+            >
+              Skip
+            </button>
+          </div>
         </form>
       </div>
 
@@ -147,6 +163,16 @@ const CompleteProfileModal = ({ onComplete }) => {
         button:disabled {
           background: #94a3b8;
           cursor: not-allowed;
+        }
+        .btn-skip {
+          background: transparent;
+          border: 1px solid var(--border-color);
+          color: var(--text-muted);
+        }
+        .btn-skip:hover {
+          background: var(--bg-main);
+          color: var(--text-main);
+          border-color: var(--text-muted);
         }
       `}</style>
     </div>
