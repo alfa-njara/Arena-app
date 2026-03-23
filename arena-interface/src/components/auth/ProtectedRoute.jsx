@@ -9,9 +9,11 @@ const ProtectedRoute = ({ allowedRoles = [] }) => {
     return <Navigate to="/landing" replace />;
   }
 
-  if (allowedRoles.length > 0 && !allowedRoles.includes(userType)) {
-    // If user is logged in but doesn't have the right role, redirect to home
-    return <Navigate to="/home" replace />;
+  if (allowedRoles.length > 0) {
+    const isAllowed = allowedRoles.includes(userType) || (allowedRoles.includes("admin") && localStorage.getItem("is_staff") === "true");
+    if (!isAllowed) {
+      return <Navigate to="/home" replace />;
+    }
   }
 
   return <Outlet />;

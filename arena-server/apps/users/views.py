@@ -174,3 +174,64 @@ class FavoriteDeleteView(generics.DestroyAPIView):
     def get_object(self):
         company_id = self.kwargs.get('company_id')
         return generics.get_object_or_404(self.get_queryset(), company_id=company_id)
+# --- Admin APIs ---
+from rest_framework.permissions import IsAdminUser
+
+class AdminStatsView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        total_companies = Company.objects.filter(is_staff=False).count()
+        active_companies = Company.objects.filter(is_staff=False, is_active=True).count()
+        total_customers = Customer.objects.filter(is_staff=False).count()
+        active_customers = Customer.objects.filter(is_staff=False, is_active=True).count()
+        
+        # Recent signups (last 5, non-staff)
+        recent_companies = CompanySerializer(Company.objects.filter(is_staff=False).order_by('-id')[:5], many=True).data
+        recent_customers = CustomerSerializer(Customer.objects.filter(is_staff=False).order_by('-id')[:5], many=True).data
+
+        return Response({
+            "stats": {
+                "total_companies": total_companies,
+                "active_companies": active_companies,
+                "total_customers": total_customers,
+                "active_customers": active_customers,
+            },
+            "recent_signups": {
+                "companies": recent_companies,
+                "customers": recent_customers
+            }
+        })
+
+class AdminCompanyListView(generics.ListAPIView):
+    queryset = Company.objects.filter(is_staff=False).order_by('-id')
+    serializer_class = CompanySerializer
+    permission_classes = [IsAdminUser]
+
+class AdminCustomerListView(generics.ListAPIView):
+    queryset = Customer.objects.filter(is_staff=False).order_by('-id')
+    serializer_class = CustomerSerializer
+    permission_classes = [IsAdminUser]
+
+class AdminUserActionView(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request):
+        user_id = request.data.get("user_id")
+        user_type = request.data.get("user_type") # 'company' or 'customer'
+        action = request.data.get("action") # 'toggle_active' or 'delete'
+
+        if user_type == 'company':
+            user = generics.get_object_or_404(Company, id=user_id)
+        else:
+            user = generics.get_object_or_404(Customer, id=user_id)
+
+        if action == 'toggle_active':
+            user.is_active = not user.is_active
+            user.save()
+            return Response({"status": "success", "is_active": user.is_active})
+        elif action == 'delete':
+            user.delete()
+            return Response({"status": "deleted"})
+
+        return Response({"error": "Invalid action"}, status=400)

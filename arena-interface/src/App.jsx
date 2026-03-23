@@ -6,6 +6,7 @@ import Choice from "./pages/choice/Choice";
 import ContributorProfile from "./components/profile/ContributorProfile";
 import Layout from "./pages/layout/Layout";
 import Dashboard from "./pages/dashboard/Dashboard";
+import AdminDashboard from "./pages/dashboard/AdminDashboard";
 import Favorites from "./pages/favorites/Favorites";
 import Settings from "./pages/settings/Settings";
 import AuthArena from "./components/log_sign/AuthArena";
@@ -34,6 +35,11 @@ function App() {
               {/* Dashboard only for contributors */}
               <Route element={<ProtectedRoute allowedRoles={["contributor"]} />}>
                 <Route path="/contributor/dashboard" element={<Dashboard />} />
+              </Route>
+
+              {/* Admin Dashboard */}
+              <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+                <Route path="/admin" element={<AdminDashboard />} />
               </Route>
             </Route>
 

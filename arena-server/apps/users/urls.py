@@ -3,7 +3,8 @@ from .views import (
     CompanyCreateView, CustomerCreateView,
     CompanyTokenObtainPairView, CustomerTokenObtainPairView,
     CompanyListView, CompanyProfileView, CompanyStatsView,
-    FavoriteListCreateView, FavoriteDeleteView, CompanyVisitCreateView
+    FavoriteListCreateView, FavoriteDeleteView, CompanyVisitCreateView,
+    AdminStatsView, AdminCompanyListView, AdminCustomerListView, AdminUserActionView
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -28,4 +29,9 @@ urlpatterns = [
     # Favorites endpoints
     path("favorites/", FavoriteListCreateView.as_view(), name="favorite-list-create"),
     path("favorites/<int:company_id>/", FavoriteDeleteView.as_view(), name="favorite-delete"),
+    # Admin endpoints
+    path("admin/stats/", AdminStatsView.as_view(), name="admin-stats"),
+    path("admin/companies/", AdminCompanyListView.as_view(), name="admin-companies"),
+    path("admin/customers/", AdminCustomerListView.as_view(), name="admin-customers"),
+    path("admin/user-action/", AdminUserActionView.as_view(), name="admin-user-action"),
 ]

@@ -43,12 +43,13 @@ const AuthArena = ({ initialIsLogin = true }) => {
         };
 
         const res = await api.post(endpoint, body);
-        const { access, refresh, full_name, name } = res.data;
+        const { access, refresh, full_name, name, is_staff } = res.data;
         
         localStorage.setItem("access_token", access);
         localStorage.setItem("refresh_token", refresh);
         localStorage.setItem("user_type", signupType);
-        login({ type: signupType });
+        localStorage.setItem("is_staff", is_staff);
+        login({ type: signupType, isStaff: is_staff });
 
         if (signupType === "contributor") {
            localStorage.setItem("contributorData", JSON.stringify({ companyName: name || "Company", phone: form.number }));

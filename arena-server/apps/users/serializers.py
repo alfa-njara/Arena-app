@@ -46,12 +46,14 @@ class CompanyTokenObtainPairSerializer(serializers.Serializer):
         refresh = RefreshToken.for_user(user)
         refresh["name"] = user.name
         refresh["user_type"] = "company"
+        refresh["is_staff"] = user.is_staff
 
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "name": user.name,
             "user_type": "company",
+            "is_staff": user.is_staff,
         }
 
 # --- Customer ---
@@ -98,12 +100,14 @@ class CustomerTokenObtainPairSerializer(serializers.Serializer):
         refresh = RefreshToken.for_user(user)
         refresh["full_name"] = user.full_name
         refresh["user_type"] = "customer"
+        refresh["is_staff"] = user.is_staff
 
         return {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
             "full_name": user.full_name,
             "user_type": "customer",
+            "is_staff": user.is_staff,
         }
 
 # --- Favorite ---

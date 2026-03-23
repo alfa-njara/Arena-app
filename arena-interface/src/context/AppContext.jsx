@@ -19,8 +19,9 @@ export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const access = localStorage.getItem("access_token");
     const userType = localStorage.getItem("user_type");
+    const isStaff = localStorage.getItem("is_staff") === "true";
     if (access && userType) {
-      return { type: userType };
+      return { type: userType, isStaff };
     }
     return null;
   });
@@ -52,6 +53,7 @@ export const AppProvider = ({ children }) => {
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user_type");
+    localStorage.removeItem("is_staff");
     localStorage.removeItem("contributorData");
     setUser(null);
   };

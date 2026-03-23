@@ -1,4 +1,4 @@
-import { BsPerson, BsGear, BsBoxArrowRight } from "react-icons/bs";
+import { BsPerson, BsGear, BsBoxArrowRight, BsShieldLock } from "react-icons/bs";
 import { RiHome9Line } from "react-icons/ri";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { GrFavorite } from "react-icons/gr";
@@ -10,14 +10,20 @@ const Sidebar = () => {
   const { isDarkMode, logout } = useAppContext();
 
   const userType = localStorage.getItem("user_type");
+  const isStaff = localStorage.getItem("is_staff") === "true";
 
   const items = [
     { id: "home", path: "/home", icon: <RiHome9Line size={24} />, label: "Home" },
     { id: "dashboard", path: "/contributor/dashboard", icon: <LuLayoutDashboard size={24} />, label: "Dashboard", roles: ["contributor"] },
+    { id: "admin", path: "/admin", icon: <BsShieldLock size={24} />, label: "Admin", roles: ["admin"] },
     { id: "profile", path: "/contributor/profile", icon: <BsPerson size={24} />, label: "Profile" },
     { id: "favorites", path: "/favorites", icon: <GrFavorite size={24} />, label: "Favorites" },
     { id: "settings", path: "/settings", icon: <BsGear size={24} />, label: "Settings" },
-  ].filter(item => !item.roles || item.roles.includes(userType));
+  ].filter(item => {
+    if (item.id === "admin") return isStaff;
+    if (item.roles && !item.roles.includes(userType)) return false;
+    return true;
+  });
 
   const handleLogout = () => {
     logout();
