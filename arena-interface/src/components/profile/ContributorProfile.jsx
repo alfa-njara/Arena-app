@@ -22,7 +22,6 @@ const DEFAULT_PROFILE = {
     "We are an Arena partner boutique specializing in innovative and local products from Madagascar.",
   location: "Antananarivo, MG",
   logoUrl: null,
-  logoUrl: null,
 };
 
 const ContributorProfile = () => {

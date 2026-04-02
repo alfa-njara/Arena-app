@@ -174,6 +174,24 @@ class FavoriteDeleteView(generics.DestroyAPIView):
     def get_object(self):
         company_id = self.kwargs.get('company_id')
         return generics.get_object_or_404(self.get_queryset(), company_id=company_id)
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        from .serializers import ChangePasswordSerializer
+        serializer = ChangePasswordSerializer(data=request.data)
+
+        if serializer.is_valid():
+            if not request.user.check_password(serializer.validated_data.get("old_password")):
+                return Response({"old_password": ["Incorrect old password."]}, status=400)
+            
+            request.user.set_password(serializer.validated_data.get("new_password"))
+            request.user.save()
+            return Response({"status": "success", "message": "Password updated successfully."}, status=200)
+
+        return Response(serializer.errors, status=400)
+
 # --- Admin APIs ---
 from rest_framework.permissions import IsAdminUser
 

@@ -1,6 +1,8 @@
-import React from "react";
-import { BsGlobe } from "react-icons/bs";
+import React, { useState } from "react";
+import { BsGlobe, BsShieldLock, BsEye, BsEyeSlash } from "react-icons/bs";
 import { useAppContext } from "../../context/AppContext";
+import api from "../../api";
+import toast from "react-hot-toast";
 
 const Settings = () => {
   const { 
@@ -14,7 +16,38 @@ const Settings = () => {
   // Adjust this value to match your exact Navbar height (e.g., 60px or 80px)
   const navbarHeight = "70px";
 
+  // Password change state
+  const [passwordData, setPasswordData] = useState({ oldPassword: "", newPassword: "", confirmPassword: "" });
+  const [showPassword, setShowPassword] = useState({ old: false, new: false, confirm: false });
+
+  const toggleVisibility = (field) => {
+    setShowPassword(prev => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const handlePasswordChange = (e) => {
+    setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
+  };
+
+  const submitPasswordChange = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("New passwords do not match.");
+      return;
+    }
+    
+    try {
+      await api.post("/change-password/", {
+        old_password: passwordData.oldPassword,
+        new_password: passwordData.newPassword
+      });
+      toast.success("Password changed successfully!");
+      setPasswordData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      toast.error(err.response?.data?.old_password?.[0] || "Failed to change password.");
+    }
+  };
+
   return (
+
     <>
       <style>{`
         .settings-wrapper {
@@ -155,8 +188,8 @@ const Settings = () => {
         <div className="container-fluid h-100 p-0">
           <div className="row h-100 g-3 justify-content-center align-items-center">
             {/* CENTERED: Preferences Card */}
-            <div className="col-lg-5 col-md-8 col-sm-10">
-              <div className="pub-glass-card shadow-sm h-auto pb-4">
+            <div className="col-lg-5 col-md-8 col-sm-10" style={{ maxHeight: '100%', overflowY: 'auto', paddingBottom: '20px' }}>
+              <div className="pub-glass-card shadow-sm h-auto pb-4 mb-4">
                 <div className="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-light border-opacity-10">
                   <div className="p-2 rounded-3 bg-info bg-opacity-10 text-info">
                     <BsGlobe size={24} />
@@ -205,6 +238,83 @@ const Settings = () => {
                     </select>
                   </div>
 
+                </div>
+              </div>
+
+              {/* Password Change Card */}
+              <div className="pub-glass-card shadow-sm h-auto pb-4">
+                <div className="d-flex align-items-center gap-2 mb-4 pb-3 border-bottom border-light border-opacity-10">
+                  <div className="p-2 rounded-3 bg-danger bg-opacity-10 text-danger">
+                    <BsShieldLock size={24} />
+                  </div>
+                  <h4 className="mb-0 fw-bold">Security</h4>
+                </div>
+                <div className="px-2">
+                  <div className="mb-3 position-relative">
+                    <label className="label-style">Old Password</label>
+                    <div className="position-relative">
+                      <input 
+                        type={showPassword.old ? "text" : "password"} 
+                        name="oldPassword" 
+                        className="form-control custom-input w-100 pe-5" 
+                        value={passwordData.oldPassword}
+                        onChange={handlePasswordChange}
+                      />
+                      <button 
+                        type="button"
+                        className="btn position-absolute end-0 top-50 translate-middle-y border-0 text-muted"
+                        onClick={() => toggleVisibility('old')}
+                      >
+                        {showPassword.old ? <BsEyeSlash /> : <BsEye />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mb-3 position-relative">
+                    <label className="label-style">New Password</label>
+                    <div className="position-relative">
+                      <input 
+                        type={showPassword.new ? "text" : "password"} 
+                        name="newPassword" 
+                        className="form-control custom-input w-100 pe-5" 
+                        value={passwordData.newPassword}
+                        onChange={handlePasswordChange}
+                      />
+                      <button 
+                        type="button"
+                        className="btn position-absolute end-0 top-50 translate-middle-y border-0 text-muted"
+                        onClick={() => toggleVisibility('new')}
+                      >
+                        {showPassword.new ? <BsEyeSlash /> : <BsEye />}
+                      </button>
+                    </div>
+                  </div>
+                  <div className="mb-4 position-relative">
+                    <label className="label-style">Confirm Password</label>
+                    <div className="position-relative">
+                      <input 
+                        type={showPassword.confirm ? "text" : "password"} 
+                        name="confirmPassword" 
+                        className="form-control custom-input w-100 pe-5" 
+                        value={passwordData.confirmPassword}
+                        onChange={handlePasswordChange}
+                      />
+                      <button 
+                        type="button"
+                        className="btn position-absolute end-0 top-50 translate-middle-y border-0 text-muted"
+                        onClick={() => toggleVisibility('confirm')}
+                      >
+                        {showPassword.confirm ? <BsEyeSlash /> : <BsEye />}
+                      </button>
+                    </div>
+                  </div>
+                  <button 
+                    className="btn btn-dark w-100 rounded-3 text-white fw-bold py-2 shadow-sm border-0"
+                    style={{ backgroundColor: "#000", color: "#fff" }}
+                    onClick={submitPasswordChange}
+                    disabled={!passwordData.oldPassword || !passwordData.newPassword || !passwordData.confirmPassword}
+                  >
+                    Update Password
+                  </button>
                 </div>
               </div>
             </div>

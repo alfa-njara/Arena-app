@@ -4,7 +4,8 @@ from .views import (
     CompanyTokenObtainPairView, CustomerTokenObtainPairView,
     CompanyListView, CompanyProfileView, CompanyStatsView,
     FavoriteListCreateView, FavoriteDeleteView, CompanyVisitCreateView,
-    AdminStatsView, AdminCompanyListView, AdminCustomerListView, AdminUserActionView
+    AdminStatsView, AdminCompanyListView, AdminCustomerListView, AdminUserActionView,
+    ChangePasswordView
 )
 from rest_framework_simplejwt.views import TokenRefreshView
 
@@ -19,6 +20,9 @@ urlpatterns = [
 
     # Refresh JWT
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+
+    # General User endpoints
+    path("change-password/", ChangePasswordView.as_view(), name="change-password"),
 
     # Company endpoints
     path("companies/list/", CompanyListView.as_view(), name="company-list"),
