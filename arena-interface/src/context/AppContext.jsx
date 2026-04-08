@@ -20,13 +20,22 @@ export const AppProvider = ({ children }) => {
     const access = localStorage.getItem("access_token");
     const userType = localStorage.getItem("user_type");
     const isStaff = localStorage.getItem("is_staff") === "true";
+    const isPremium = localStorage.getItem("is_premium") === "true";
     if (access && userType) {
-      return { type: userType, isStaff };
+      return { type: userType, isStaff, isPremium };
     }
     return null;
   });
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [isAppLoading, setIsAppLoading] = useState(false);
+
+  const triggerAppLoading = (duration = 1500) => {
+    setIsAppLoading(true);
+    setTimeout(() => {
+      setIsAppLoading(false);
+    }, duration);
+  };
 
   useEffect(() => {
     localStorage.setItem("dark_mode", isDarkMode);
@@ -54,6 +63,7 @@ export const AppProvider = ({ children }) => {
     localStorage.removeItem("refresh_token");
     localStorage.removeItem("user_type");
     localStorage.removeItem("is_staff");
+    localStorage.removeItem("is_premium");
     localStorage.removeItem("contributorData");
     setUser(null);
   };
@@ -76,6 +86,8 @@ export const AppProvider = ({ children }) => {
         logout,
         searchQuery,
         setSearchQuery,
+        isAppLoading,
+        triggerAppLoading,
       }}
     >
       {children}

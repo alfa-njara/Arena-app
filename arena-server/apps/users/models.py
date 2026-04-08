@@ -31,6 +31,7 @@ class Company(AbstractBaseUser, PermissionsMixin):
     logo_url = models.ImageField(upload_to='company_logos/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    is_premium = models.BooleanField(default=False)
 
     # Fix conflits permissions
     groups = models.ManyToManyField(

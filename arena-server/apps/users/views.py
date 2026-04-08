@@ -201,6 +201,7 @@ class AdminStatsView(APIView):
     def get(self, request):
         total_companies = Company.objects.filter(is_staff=False).count()
         active_companies = Company.objects.filter(is_staff=False, is_active=True).count()
+        premium_companies = Company.objects.filter(is_staff=False, is_premium=True).count()
         total_customers = Customer.objects.filter(is_staff=False).count()
         active_customers = Customer.objects.filter(is_staff=False, is_active=True).count()
         
@@ -212,6 +213,7 @@ class AdminStatsView(APIView):
             "stats": {
                 "total_companies": total_companies,
                 "active_companies": active_companies,
+                "premium_companies": premium_companies,
                 "total_customers": total_customers,
                 "active_customers": active_customers,
             },
@@ -248,6 +250,12 @@ class AdminUserActionView(APIView):
             user.is_active = not user.is_active
             user.save()
             return Response({"status": "success", "is_active": user.is_active})
+        elif action == 'toggle_premium':
+            if user_type != 'company':
+                return Response({"error": "Premium is only for companies"}, status=400)
+            user.is_premium = not user.is_premium
+            user.save()
+            return Response({"status": "success", "is_premium": user.is_premium})
         elif action == 'delete':
             user.delete()
             return Response({"status": "deleted"})

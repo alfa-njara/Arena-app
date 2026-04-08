@@ -8,7 +8,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ["id", "name", "phone_number", "contribution_type", "website", "description", "location", "logo_url", "password"]
+        fields = ["id", "name", "phone_number", "contribution_type", "website", "description", "location", "logo_url", "password", "is_premium"]
 
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -47,6 +47,7 @@ class CompanyTokenObtainPairSerializer(serializers.Serializer):
         refresh["name"] = user.name
         refresh["user_type"] = "company"
         refresh["is_staff"] = user.is_staff
+        refresh["is_premium"] = user.is_premium
 
         return {
             "refresh": str(refresh),
@@ -54,6 +55,7 @@ class CompanyTokenObtainPairSerializer(serializers.Serializer):
             "name": user.name,
             "user_type": "company",
             "is_staff": user.is_staff,
+            "is_premium": user.is_premium,
         }
 
 # --- Customer ---

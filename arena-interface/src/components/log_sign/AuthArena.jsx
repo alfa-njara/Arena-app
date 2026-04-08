@@ -7,7 +7,7 @@ import { useAppContext } from "../../context/AppContext";
 
 const AuthArena = ({ initialIsLogin = true }) => {
   const navigate = useNavigate();
-  const { login } = useAppContext();
+  const { login, triggerAppLoading } = useAppContext();
   const [isLogin, setIsLogin] = useState(initialIsLogin);
   const [signupType, setSignupType] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
@@ -43,13 +43,16 @@ const AuthArena = ({ initialIsLogin = true }) => {
         };
 
         const res = await api.post(endpoint, body);
-        const { access, refresh, full_name, name, is_staff } = res.data;
+        const { access, refresh, full_name, name, is_staff, is_premium } = res.data;
+        
+        triggerAppLoading(2000); // Pulse before entry
         
         localStorage.setItem("access_token", access);
         localStorage.setItem("refresh_token", refresh);
         localStorage.setItem("user_type", signupType);
         localStorage.setItem("is_staff", is_staff);
-        login({ type: signupType, isStaff: is_staff });
+        localStorage.setItem("is_premium", is_premium || false);
+        login({ type: signupType, isStaff: is_staff, isPremium: is_premium || false });
 
         if (signupType === "contributor") {
            localStorage.setItem("contributorData", JSON.stringify({ companyName: name || "Company", phone: form.number }));
@@ -77,14 +80,36 @@ const AuthArena = ({ initialIsLogin = true }) => {
         const res = await api.post(endpoint, body);
 
         if (res.status === 201) {
+          triggerAppLoading(1500);
           toast.success("Account created! You can now log in.");
           setIsLogin(true); // Switch to login pane
         }
       }
     } catch (error) {
       console.error(error);
-      const msg = error.response?.data ? JSON.stringify(error.response.data) : "An error occurred";
-      toast.error(msg);
+      let errorMsg = "An error occurred. Please try again.";
+      
+      if (error.response && error.response.data) {
+        const data = error.response.data;
+        
+        if (typeof data === 'string') {
+          errorMsg = data;
+        } else if (data.detail) {
+          errorMsg = data.detail;
+        } else if (data.non_field_errors) {
+          errorMsg = data.non_field_errors[0];
+        } else {
+          // Extract first error from values
+          const values = Object.values(data);
+          if (values.length > 0 && Array.isArray(values[0])) {
+            errorMsg = values[0][0];
+          } else if (typeof values[0] === 'string') {
+            errorMsg = values[0];
+          }
+        }
+      }
+      
+      toast.error(errorMsg);
     }
   };
 
