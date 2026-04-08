@@ -39,7 +39,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
         border: `1px solid ${isDarkMode ? "rgba(245,158,11,0.3)" : "rgba(245,158,11,0.2)"}`,
         borderRadius: "32px",
         padding: "50px 40px",
-        maxWidth: "550px", 
+        maxWidth: "550px", // Larger card
         width: "100%",
         textAlign: "center",
         boxShadow: isDarkMode 
@@ -64,7 +64,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           gap: "8px",
           boxShadow: "0 4px 12px rgba(217, 119, 6, 0.3)",
         }}>
-          <BsStarFill /> PREMIUM ACCESS REQUIRED
+          <BsStarFill /> ACCÈS PREMIUM REQUIS
         </div>
 
         {/* Big Icon Container */}
@@ -87,7 +87,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           marginBottom: "15px",
           color: isDarkMode ? "#f1f5f9" : "#0f172a",
         }}>
-          Dashboard Locked
+          Dashboard Bloqué
         </h2>
 
         <p style={{
@@ -96,7 +96,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           marginBottom: "35px",
           lineHeight: 1.6,
         }}>
-          Advanced statistics and performance tracking are reserved for Premium accounts. Turn your data into opportunities today.
+          Les statistiques avancées et le suivi de performance sont réservés aux comptes Premium. Transformez vos données en opportunités.
         </p>
 
         {/* Benefits Grid */}
@@ -108,10 +108,10 @@ const PremiumLockedView = ({ isDarkMode }) => {
           textAlign: "left",
         }}>
           {[
-            "Real-time analytics",
-            "Favorites tracking",
-            "Unlimited history",
-            "Priority support"
+            "Analyses en temps réel",
+            "Suivi des favoris",
+            "Historique illimité",
+            "Support prioritaire"
           ].map((text, i) => (
             <div key={i} style={{
               display: "flex",
@@ -138,10 +138,10 @@ const PremiumLockedView = ({ isDarkMode }) => {
           marginBottom: "35px",
         }}>
           <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "15px", color: "#f59e0b" }}>
-            How to activate my access?
+            Comment activer mon accès ?
           </h4>
           <p style={{ fontSize: "0.85rem", color: "#94a3b8", marginBottom: "20px" }}>
-            Please contact our administration team for immediate activation of your analytical tools.
+            Contactez notre équipe administrative pour une activation immédiate de vos outils analytiques.
           </p>
         </div>
 
@@ -175,7 +175,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           }}
         >
           <LuPhone />
-          Call Administrator
+          Appeler l'Administrateur
         </button>
       </div>
     </div>
@@ -200,6 +200,7 @@ const Dashboard = () => {
   const [loadingPremium, setLoadingPremium] = useState(true);
 
   useEffect(() => {
+    // Re-check premium status strictly from server on mount
     api.get("/companies/me/")
       .then(res => {
         const premiumStatus = res.data?.is_premium || false;
@@ -245,6 +246,7 @@ const Dashboard = () => {
     borderRadius: "24px",
   };
 
+  // 1. Loading state while checking subscription
   if (loadingPremium) {
     return (
       <div style={{ height: "calc(100vh - 70px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -255,10 +257,12 @@ const Dashboard = () => {
     );
   }
 
+  // 2. Return locked view immediately if not premium
   if (!isPremium) {
     return <PremiumLockedView isDarkMode={isDarkMode} />;
   }
 
+  // 3. Render real dashboard if premium
   return (
     <div className={`dashboard-wrapper ${isDarkMode ? "bg-dark" : "bg-light"}`}>
       <div className="container-fluid h-100 d-flex flex-column p-4">
@@ -394,7 +398,7 @@ const Dashboard = () => {
               <div className="flex-grow-1 overflow-auto pe-2 custom-scroll">
                 {stats.recent_activity.length > 0 ? stats.recent_activity.map((item, idx) => (
                   <div key={idx} className="d-flex align-items-center gap-3 mb-3 p-2 rounded-4 hover-effect">
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: item.type === "visit" ? "rgba(13, 110, 253, 0.1)" : "rgba(220, 53, 69, 0.1)", color: item.type === "visit" ? "#0d6efd" : "#dc3545", display: "flex", alignItems: "center", justifyCenter: "content", flexShrink: 0 }}>
+                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: item.type === "visit" ? "rgba(13, 110, 253, 0.1)" : "rgba(220, 53, 69, 0.1)", color: item.type === "visit" ? "#0d6efd" : "#dc3545", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       {item.type === "visit" ? <LuUser size={16} /> : <LuHeart size={16} />}
                     </div>
                     <div className="overflow-hidden">

@@ -7,7 +7,7 @@ import { useAppContext } from "../../context/AppContext";
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { isDarkMode, logout, triggerAppLoading } = useAppContext();
+  const { isDarkMode, logout } = useAppContext();
 
   const userType = localStorage.getItem("user_type");
   const isStaff = localStorage.getItem("is_staff") === "true";
@@ -26,7 +26,6 @@ const Sidebar = () => {
   });
 
   const handleLogout = () => {
-    triggerAppLoading(1200);
     logout();
     navigate("/landing");
   };

@@ -28,14 +28,6 @@ export const AppProvider = ({ children }) => {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [isAppLoading, setIsAppLoading] = useState(false);
-
-  const triggerAppLoading = (duration = 1500) => {
-    setIsAppLoading(true);
-    setTimeout(() => {
-      setIsAppLoading(false);
-    }, duration);
-  };
 
   useEffect(() => {
     localStorage.setItem("dark_mode", isDarkMode);
@@ -86,8 +78,6 @@ export const AppProvider = ({ children }) => {
         logout,
         searchQuery,
         setSearchQuery,
-        isAppLoading,
-        triggerAppLoading,
       }}
     >
       {children}

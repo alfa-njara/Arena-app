@@ -50,15 +50,12 @@ const AdminDashboard = () => {
       });
       
       if (res.data.status === "success" || res.data.status === "deleted") {
-        let successMsg = "Action completed";
-        if (action === 'delete') successMsg = "Account deleted";
-        else if (action === 'toggle_active') {
-          successMsg = res.data.is_active ? "Account Activated ✅" : "Account Deactivated ⏸️";
-        } else if (action === 'toggle_premium') {
-          successMsg = res.data.is_premium ? "Upgraded to Premium ⭐" : "Premium removed";
-        }
-        
-        toast.success(successMsg);
+        const messages = {
+          'delete': 'deleted',
+          'toggle_active': 'status updated',
+          'toggle_premium': res.data.is_premium ? 'upgraded to Premium ⭐' : 'premium removed'
+        };
+        toast.success(`Company ${messages[action] || 'updated'} successfully`);
         fetchData(); // Refresh
       }
     } catch (err) {
@@ -322,7 +319,7 @@ const AdminDashboard = () => {
                     <td>
                       <div className={`status-pill ${comp.is_active ? 'status-active' : 'status-inactive'}`}>
                         <span className="status-dot"></span>
-                        {comp.is_active ? 'Active' : 'Inactive'}
+                        {comp.is_active ? 'En ligne' : 'Hors ligne'}
                       </div>
                     </td>
                     <td className="action-btns">
@@ -365,7 +362,7 @@ const AdminDashboard = () => {
                     <td>
                       <div className={`status-pill ${cust.is_active ? 'status-active' : 'status-inactive'}`}>
                         <span className="status-dot"></span>
-                        {cust.is_active ? 'Active' : 'Inactive'}
+                        {cust.is_active ? 'En ligne' : 'Hors ligne'}
                       </div>
                     </td>
                     <td className="action-btns">

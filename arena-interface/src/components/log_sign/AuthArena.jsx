@@ -7,7 +7,7 @@ import { useAppContext } from "../../context/AppContext";
 
 const AuthArena = ({ initialIsLogin = true }) => {
   const navigate = useNavigate();
-  const { login, triggerAppLoading } = useAppContext();
+  const { login } = useAppContext();
   const [isLogin, setIsLogin] = useState(initialIsLogin);
   const [signupType, setSignupType] = useState("user");
   const [showPassword, setShowPassword] = useState(false);
@@ -45,8 +45,6 @@ const AuthArena = ({ initialIsLogin = true }) => {
         const res = await api.post(endpoint, body);
         const { access, refresh, full_name, name, is_staff, is_premium } = res.data;
         
-        triggerAppLoading(2000); // Pulse before entry
-        
         localStorage.setItem("access_token", access);
         localStorage.setItem("refresh_token", refresh);
         localStorage.setItem("user_type", signupType);
@@ -80,7 +78,6 @@ const AuthArena = ({ initialIsLogin = true }) => {
         const res = await api.post(endpoint, body);
 
         if (res.status === 201) {
-          triggerAppLoading(1500);
           toast.success("Account created! You can now log in.");
           setIsLogin(true); // Switch to login pane
         }

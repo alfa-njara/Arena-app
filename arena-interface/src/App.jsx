@@ -12,7 +12,6 @@ import Settings from "./pages/settings/Settings";
 import AuthArena from "./components/log_sign/AuthArena";
 import LandingPage from "./pages/landing/LandingPage";
 import { AppProvider } from "./context/AppContext";
-import GlobalLoading from "./components/loading/GlobalLoading";
 
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
@@ -20,7 +19,6 @@ function App() {
   return (
     <AppProvider>
       <BrowserRouter>
-        <GlobalLoading />
         <Toaster position="top-center" />
         <Routes>
           {/* Redirection automatique vers /landing si on arrive sur "/" */}
