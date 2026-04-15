@@ -19,7 +19,7 @@ import {
   LuPhone,
   LuShieldCheck,
 } from "react-icons/lu";
-import { BsGem, BsStarFill } from "react-icons/bs";
+import { BsGem, BsStarFill, BsGlobe } from "react-icons/bs";
 import { useAppContext } from "../../context/AppContext";
 
 // ── PREMIUM LOCKED VIEW ──
@@ -192,6 +192,7 @@ const Dashboard = () => {
     chart_data: [],
     recent_activity: [],
     total_views: 0,
+    total_visits: 0,
     total_favorites: 0,
     growth: "+0%"
   });
@@ -214,13 +215,19 @@ const Dashboard = () => {
   useEffect(() => {
     if (!isPremium) return;
     
-    api.get("/companies/stats/")
-       .then(res => {
-         if (res.data && res.data.chart_data) {
-           setStats(res.data);
-         }
-       })
-       .catch(err => console.error("Error fetching stats:", err));
+    const fetchStats = () => {
+      api.get("/companies/stats/")
+         .then(res => {
+           if (res.data && res.data.chart_data) {
+             setStats(res.data);
+           }
+         })
+         .catch(err => console.error("Error fetching stats:", err));
+    };
+
+    fetchStats();
+    const interval = setInterval(fetchStats, 30000); // Poll every 30s
+    return () => clearInterval(interval);
   }, [isPremium]);
 
   const processedChartData = useMemo(() => {
@@ -270,12 +277,20 @@ const Dashboard = () => {
         <div className="row g-3 mb-4 flex-shrink-0">
           {[
             {
-              label: "Views",
+              label: "Profile Views",
               value: stats.total_views.toLocaleString(),
               trend: stats.growth,
               isUp: !stats.growth.includes("-"),
               icon: <LuEye />,
               color: "#0d6efd",
+            },
+            {
+              label: "Website Visits",
+              value: stats.total_visits.toLocaleString(),
+              trend: "N/A",
+              isUp: true,
+              icon: <BsGlobe />,
+              color: "#198754",
             },
             {
               label: "Hearts",
@@ -362,6 +377,13 @@ const Dashboard = () => {
                       Views
                     </button>
                     <button
+                      onClick={() => setMetric("visits")}
+                      className={`btn btn-sm border-0 rounded-3 px-3 fw-bold ${metric === "visits" ? "btn-success shadow-sm" : isDarkMode ? "text-white" : "text-dark"}`}
+                      style={{ fontSize: "0.75rem" }}
+                    >
+                      Visits
+                    </button>
+                    <button
                       onClick={() => setMetric("favorites")}
                       className={`btn btn-sm border-0 rounded-3 px-3 fw-bold ${metric === "favorites" ? "btn-danger shadow-sm" : isDarkMode ? "text-white" : "text-dark"}`}
                       style={{ fontSize: "0.75rem" }}
@@ -377,15 +399,15 @@ const Dashboard = () => {
                   <AreaChart data={processedChartData}>
                     <defs>
                       <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={metric === "views" ? "#0d6efd" : "#dc3545"} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={metric === "views" ? "#0d6efd" : "#dc3545"} stopOpacity={0} />
+                        <stop offset="5%" stopColor={metric === "views" ? "#0d6efd" : (metric === "visits" ? "#198754" : "#dc3545")} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={metric === "views" ? "#0d6efd" : (metric === "visits" ? "#198754" : "#dc3545")} stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "rgba(255,255,255,0.05)" : "#eee"} />
                     <XAxis dataKey="label" stroke="#888" fontSize={10} tickLine={false} axisLine={false} interval={timeframe === "year" ? 6 : timeframe === "month" ? 4 : 0} />
                     <YAxis stroke="#888" fontSize={10} tickLine={false} axisLine={false} />
                     <Tooltip contentStyle={{ backgroundColor: isDarkMode ? "#1e1e1e" : "#fff", borderRadius: "12px", border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }} />
-                    <Area type="monotone" dataKey={metric} stroke={metric === "views" ? "#0d6efd" : "#dc3545"} fillOpacity={1} fill="url(#chartGrad)" strokeWidth={3} animationDuration={1000} />
+                    <Area type="monotone" dataKey={metric} stroke={metric === "views" ? "#0d6efd" : (metric === "visits" ? "#198754" : "#dc3545")} fillOpacity={1} fill="url(#chartGrad)" strokeWidth={3} animationDuration={1000} />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -398,12 +420,28 @@ const Dashboard = () => {
               <div className="flex-grow-1 overflow-auto pe-2 custom-scroll">
                 {stats.recent_activity.length > 0 ? stats.recent_activity.map((item, idx) => (
                   <div key={idx} className="d-flex align-items-center gap-3 mb-3 p-2 rounded-4 hover-effect">
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: item.type === "visit" ? "rgba(13, 110, 253, 0.1)" : "rgba(220, 53, 69, 0.1)", color: item.type === "visit" ? "#0d6efd" : "#dc3545", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      {item.type === "visit" ? <LuUser size={16} /> : <LuHeart size={16} />}
+                    <div style={{ 
+                      width: "36px", 
+                      height: "36px", 
+                      borderRadius: "50%", 
+                      background: item.type === "favorite" 
+                        ? "rgba(220, 53, 69, 0.1)" 
+                        : (item.visit_type === "website_click" ? "rgba(25, 135, 84, 0.1)" : "rgba(13, 110, 253, 0.1)"), 
+                      color: item.type === "favorite" 
+                        ? "#dc3545" 
+                        : (item.visit_type === "website_click" ? "#198754" : "#0d6efd"), 
+                      display: "flex", 
+                      alignItems: "center", 
+                      justifyContent: "center", 
+                      flexShrink: 0 
+                    }}>
+                      {item.type === "favorite" ? <LuHeart size={16} /> : (item.visit_type === "website_click" ? <BsGlobe size={16} /> : <LuUser size={16} />)}
                     </div>
                     <div className="overflow-hidden">
                       <p className={`mb-0 fw-bold text-truncate small ${isDarkMode ? "text-white" : "text-dark"}`}>{item.user}</p>
-                      <span className="text-muted x-small">{item.type === "favorite" ? "Favorited you" : "Viewed your profile"} • {item.label} {item.time_label}</span>
+                      <span className="text-muted x-small">
+                        {item.type === "favorite" ? "Favorited you" : (item.visit_type === "website_click" ? "Visited your website" : "Viewed your profile")} • {item.label} {item.time_label}
+                      </span>
                     </div>
                   </div>
                 )) : <p className="text-muted text-center mt-4 small">No recent activity yet.</p>}

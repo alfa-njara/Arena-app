@@ -8,15 +8,7 @@ const CompanyProfileModal = ({ company, onClose }) => {
 
   const visitLogged = useRef(false);
 
-  useEffect(() => {
-    if (company?.id && !visitLogged.current) {
-      api.post(`/companies/${company.id}/visit/`)
-        .then(() => {
-          visitLogged.current = true;
-        })
-        .catch(err => console.error("Visit tracking failed", err));
-    }
-  }, [company?.id]);
+  // Remove automatic tracking to prevent double counting from component lifecycle/StrictMode
 
   if (!company) return null;
 
@@ -60,7 +52,16 @@ const CompanyProfileModal = ({ company, onClose }) => {
             )}
             
             {company.link && (
-              <a href={company.link} target="_blank" rel="noopener noreferrer" className="contact-item link-item">
+              <a 
+                href={company.link} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="contact-item link-item"
+                onClick={() => {
+                  api.post(`/companies/${company.id}/visit/`, { visit_type: 'website_click' })
+                    .catch(err => console.error("Website click tracking failed", err));
+                }}
+              >
                 <div className="icon-wrapper bg-success-light text-success">
                   <BsGlobe size={20} />
                 </div>

@@ -213,19 +213,25 @@ const AdminDashboard = () => {
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon" style={{ background: '#fef3c7', color: '#d97706' }}><BsGem /></div>
+              <div className="stat-icon" style={{ background: '#dbeafe', color: '#3b82f6' }}><BsActivity /></div>
               <div className="stat-info">
-                <h3>Premium</h3>
-                <p>{stats.premium_companies}</p>
-                <small className="text-muted fw-bold">{stats.premium_ratio}% ratio</small>
+                <h3>Profile Views</h3>
+                <p>{stats.total_profile_views || 0}</p>
               </div>
             </div>
             <div className="stat-card">
-              <div className="stat-icon" style={{ background: '#ede9fe', color: '#7c3aed' }}><BsGlobe /></div>
+              <div className="stat-icon" style={{ background: '#dcfce7', color: '#10b981' }}><BsGlobe /></div>
+              <div className="stat-info">
+                <h3>Site Visits</h3>
+                <p>{stats.total_site_visits || 0}</p>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon" style={{ background: '#ede9fe', color: '#7c3aed' }}><BsActivity /></div>
               <div className="stat-info">
                 <h3>Online Now</h3>
                 <p>{stats.online_now}</p>
-                <small className="text-muted fw-bold">Active within 24h</small>
+                <small className="text-muted fw-bold">Active now</small>
               </div>
             </div>
           </div>

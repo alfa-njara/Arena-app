@@ -134,17 +134,21 @@ const Favorites = () => {
                           >
                             <BsHeartFill size={16} />
                           </button>
-                          {pub.link && (
+                           {pub.link && (
                             <a
                               href={pub.link}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="minimal-visit-btn"
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                api.post(`/companies/${pub.id}/visit/`, { visit_type: 'website_click' })
+                                  .catch(err => console.error("Website click tracking failed", err));
+                              }}
                             >
                               Visit Site
                             </a>
-                          )}
+                           )}
                         </div>
                       </div>
                     </div>

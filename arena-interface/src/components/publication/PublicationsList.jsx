@@ -246,7 +246,11 @@ const PublicationsList = () => {
                             target="_blank"
                             rel="noopener noreferrer"
                             className="minimal-visit-btn"
-                            onClick={(e) => e.stopPropagation()}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              api.post(`/companies/${pub.id}/visit/`, { visit_type: 'website_click' })
+                                .catch(err => console.error("Website click tracking failed", err));
+                            }}
                           >
                             Visit
                           </a>

@@ -121,12 +121,43 @@ class Favorite(models.Model):
 # Visit Tracking Model
 # ----------------------------
 class CompanyVisit(models.Model):
+    VISIT_TYPES = [
+        ('profile_view', 'Profile View'),
+        ('website_click', 'Website Click'),
+    ]
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="visits", null=True, blank=True)
     company_user = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_visits", null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="visited_by")
     ip_address = models.GenericIPAddressField(null=True, blank=True)
+    visit_type = models.CharField(max_length=20, choices=VISIT_TYPES, default='profile_view', db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         user_name = self.customer.full_name if self.customer else (self.company_user.name if self.company_user else "Anonymous")
         return f"{user_name} visited {self.company.name}"
+# ----------------------------
+# Activity & Session Tracking
+# ----------------------------
+class ActivityLog(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True)
+    company_user = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+    action = models.CharField(max_length=255)
+    path = models.CharField(max_length=500, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-timestamp']
+
+class UserSession(models.Model):
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, null=True, blank=True)
+    company_user = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
+    start_time = models.DateTimeField(auto_now_add=True)
+    last_activity = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    @property
+    def duration_seconds(self):
+        if self.last_activity and self.start_time:
+            return (self.last_activity - self.start_time).total_seconds()
+        return 0

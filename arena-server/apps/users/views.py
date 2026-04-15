@@ -59,7 +59,8 @@ class CompanyStatsView(APIView):
         data = []
         for i in range(30, -1, -1):
             d = now - timedelta(days=i)
-            views = CompanyVisit.objects.filter(company=user, created_at__date=d.date()).count()
+            views = CompanyVisit.objects.filter(company=user, created_at__date=d.date(), visit_type='profile_view').count()
+            clicks = CompanyVisit.objects.filter(company=user, created_at__date=d.date(), visit_type='website_click').count()
             favorites = Favorite.objects.filter(company=user, created_at__date=d.date()).count()
             
             timeframe = "year"
@@ -70,6 +71,7 @@ class CompanyStatsView(APIView):
                 "date": d.strftime("%Y-%m-%d"),
                 "label": d.strftime("%b %d"),
                 "views": views,
+                "visits": clicks,
                 "favorites": favorites,
                 "timeframe": timeframe
             })
@@ -83,7 +85,12 @@ class CompanyStatsView(APIView):
             feed.append({"type": "favorite", "user": name, "date": f.created_at})
         for v in recent_visits:
             name = v.customer.full_name if v.customer else (v.company_user.name if v.company_user else "Anonymous")
-            feed.append({"type": "visit", "user": name, "date": v.created_at})
+            feed.append({
+                "type": "visit", 
+                "user": name, 
+                "date": v.created_at, 
+                "visit_type": v.visit_type
+            })
             
         feed.sort(key=lambda x: x['date'], reverse=True)
         feed = feed[:15]
@@ -93,13 +100,15 @@ class CompanyStatsView(APIView):
             item['label'] = item['date'].strftime("%b %d")
             del item['date']
 
-        total_views = CompanyVisit.objects.filter(company=user).count()
+        total_views = CompanyVisit.objects.filter(company=user, visit_type='profile_view').count()
+        total_visits = CompanyVisit.objects.filter(company=user, visit_type='website_click').count()
         total_favs = Favorite.objects.filter(company=user).count()
         
         return Response({
             "chart_data": data,
             "recent_activity": feed,
             "total_views": total_views,
+            "total_visits": total_visits,
             "total_favorites": total_favs,
             "growth": "+0%"
         })
@@ -118,6 +127,7 @@ class CompanyVisitCreateView(APIView):
         
         company = generics.get_object_or_404(Company, id=company_id)
         user = request.user
+        visit_type = request.data.get('visit_type', 'profile_view')
         
         # Determine unique identifier for the visitor
         remote_addr = request.META.get('HTTP_X_FORWARDED_FOR')
@@ -126,10 +136,10 @@ class CompanyVisitCreateView(APIView):
         else:
             ip_address = request.META.get('REMOTE_ADDR')
             
-        # Debounce logic: ignore duplicates in the last 2 minutes
-        debounce_window = timezone.now() - timedelta(minutes=2)
+        # Debounce logic: ignore duplicate of same TYPE in the last 60 seconds
+        debounce_window = timezone.now() - timedelta(seconds=60)
         
-        filters = {"company": company, "created_at__gte": debounce_window}
+        filters = {"company": company, "created_at__gte": debounce_window, "visit_type": visit_type}
         
         if getattr(user, 'is_authenticated', False):
             if hasattr(user, 'full_name'): # Customer
@@ -137,27 +147,25 @@ class CompanyVisitCreateView(APIView):
             else: # Company User
                 filters["company_user"] = user
         else:
-            # For anonymous visitors, we use their IP address to debounce
             filters["ip_address"] = ip_address
-            # Only count if no anonymous visit from this IP in last 2 mins
             filters["customer__isnull"] = True
             filters["company_user__isnull"] = True
             
         # Check if a recent visit matching these filters already exists
         if CompanyVisit.objects.filter(**filters).exists():
-            return Response({"status": "Visit already logged recently"}, status=200)
+            return Response({"status": f"Recently logged {visit_type}"}, status=200)
 
         # Create new visit
         if getattr(user, 'is_authenticated', False):
             if hasattr(user, 'full_name'):
-                CompanyVisit.objects.create(company=company, customer=user, ip_address=ip_address)
+                CompanyVisit.objects.create(company=company, customer=user, ip_address=ip_address, visit_type=visit_type)
             else:
                 if str(user.id) != str(company_id): # Don't track visits to own profile
-                    CompanyVisit.objects.create(company=company, company_user=user, ip_address=ip_address)
+                    CompanyVisit.objects.create(company=company, company_user=user, ip_address=ip_address, visit_type=visit_type)
         else:
-            CompanyVisit.objects.create(company=company, ip_address=ip_address)
+            CompanyVisit.objects.create(company=company, ip_address=ip_address, visit_type=visit_type)
             
-        return Response({"status": "Visit logged"})
+        return Response({"status": f"{visit_type} logged"})
 
 class FavoriteListCreateView(generics.ListCreateAPIView):
     serializer_class = FavoriteSerializer
@@ -253,7 +261,8 @@ class AdminStatsView(APIView):
         online_customers = Customer.objects.filter(is_staff=False, last_activity__gte=five_minutes_ago).count()
 
         # Platform Activity
-        total_visits = CompanyVisit.objects.count()
+        total_views = CompanyVisit.objects.filter(visit_type='profile_view').count()
+        total_site_visits = CompanyVisit.objects.filter(visit_type='website_click').count()
         total_favorites = Favorite.objects.count()
 
         # Registration History (30 Days)
@@ -282,7 +291,10 @@ class AdminStatsView(APIView):
                 "total_customers": total_customers,
                 "active_customers": active_customers,
                 "online_now": online_companies + online_customers,
-                "total_engagement": total_visits + total_favorites,
+                "total_engagement": total_views + total_site_visits + total_favorites,
+                "total_profile_views": total_views,
+                "total_site_visits": total_site_visits,
+                "total_favorites": total_favorites,
                 "premium_ratio": round((premium_companies / total_companies * 100) if total_companies > 0 else 0, 1),
                 "total_registrations": total_companies + total_customers
             },
