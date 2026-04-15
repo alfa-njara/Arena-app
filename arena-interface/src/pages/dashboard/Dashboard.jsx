@@ -64,7 +64,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           gap: "8px",
           boxShadow: "0 4px 12px rgba(217, 119, 6, 0.3)",
         }}>
-          <BsStarFill /> ACCÈS PREMIUM REQUIS
+          <BsStarFill /> PREMIUM ACCESS REQUIRED
         </div>
 
         {/* Big Icon Container */}
@@ -87,7 +87,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           marginBottom: "15px",
           color: isDarkMode ? "#f1f5f9" : "#0f172a",
         }}>
-          Dashboard Bloqué
+          Dashboard Locked
         </h2>
 
         <p style={{
@@ -96,7 +96,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           marginBottom: "35px",
           lineHeight: 1.6,
         }}>
-          Les statistiques avancées et le suivi de performance sont réservés aux comptes Premium. Transformez vos données en opportunités.
+          Advanced statistics and performance tracking are reserved for Premium accounts. Turn your data into opportunities.
         </p>
 
         {/* Benefits Grid */}
@@ -108,10 +108,10 @@ const PremiumLockedView = ({ isDarkMode }) => {
           textAlign: "left",
         }}>
           {[
-            "Analyses en temps réel",
-            "Suivi des favoris",
-            "Historique illimité",
-            "Support prioritaire"
+            "Real-time analytics",
+            "Favorite tracking",
+            "Unlimited history",
+            "Priority support"
           ].map((text, i) => (
             <div key={i} style={{
               display: "flex",
@@ -138,10 +138,10 @@ const PremiumLockedView = ({ isDarkMode }) => {
           marginBottom: "35px",
         }}>
           <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "15px", color: "#f59e0b" }}>
-            Comment activer mon accès ?
+            How to activate my access?
           </h4>
           <p style={{ fontSize: "0.85rem", color: "#94a3b8", marginBottom: "20px" }}>
-            Contactez notre équipe administrative pour une activation immédiate de vos outils analytiques.
+            Contact our administrative team for immediate activation of your analytical tools.
           </p>
         </div>
 
@@ -175,7 +175,7 @@ const PremiumLockedView = ({ isDarkMode }) => {
           }}
         >
           <LuPhone />
-          Appeler l'Administrateur
+          Call Administrator
         </button>
       </div>
     </div>

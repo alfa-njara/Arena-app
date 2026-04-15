@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./PublicationsList.css";
 import { BsTelephone, BsHeart, BsHeartFill, BsGrid, BsFire, BsClock } from "react-icons/bs";
 import toast from "react-hot-toast";
-import api from "../../api";
+import api, { BASE_URL } from "../../api";
 import { useAppContext } from "../../context/AppContext";
 import CompanyProfileModal from "../profile/CompanyProfileModal";
 
@@ -14,6 +14,7 @@ const typeStyles = {
   "Education / Training": { bg: "#e8f5e9", color: "#2e7d32" },
   "Restaurant / Food": { bg: "#ffebee", color: "#c62828" },
   "Health & Wellness": { bg: "#e0f2f1", color: "#00796b" },
+  "Art & Culture": { bg: "#fce4ec", color: "#d81b60" },
   "Other": { bg: "#f8f9fa", color: "#6c757d" },
   "Default": { bg: "#f8f9fa", color: "#6c757d" }
 };
@@ -41,7 +42,7 @@ const PublicationsList = () => {
         type: item.contribution_type,
         link: item.website,
         description: item.description,
-        logo: item.logo_url,
+        logo: item.logo_url && !item.logo_url.startsWith("http") ? `${BASE_URL}${item.logo_url}` : item.logo_url,
         location: item.location
       }));
       setPublications(mapped);
@@ -169,7 +170,7 @@ const PublicationsList = () => {
 
       <div className="container-fluid">
         <div className="filter-bar">
-          {["All", "Recent", "Popular", ...Object.keys(typeStyles).filter(t => t !== "Default" && publications.some(p => p.type === t))].map((cat) => (
+          {["All", "Recent", "Popular", ...Object.keys(typeStyles).filter(t => t !== "Default")].map((cat) => (
             <button
               key={cat}
               className={`filter-btn ${activeFilter === cat ? "active" : ""}`}

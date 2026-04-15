@@ -2,6 +2,7 @@ import axios from "axios";
 
 // Determine base URL depending on env or default to Django dev server
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+export const BASE_URL = API_URL.replace("/api", "");
 
 const api = axios.create({
   baseURL: API_URL,

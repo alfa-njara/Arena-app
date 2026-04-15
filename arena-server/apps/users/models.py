@@ -32,6 +32,8 @@ class Company(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_premium = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_activity = models.DateTimeField(null=True, blank=True)
 
     # Fix conflits permissions
     groups = models.ManyToManyField(
@@ -70,6 +72,8 @@ class Customer(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=20, unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_activity = models.DateTimeField(null=True, blank=True)
 
     # Fix conflits permissions
     groups = models.ManyToManyField(
@@ -120,6 +124,7 @@ class CompanyVisit(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="visits", null=True, blank=True)
     company_user = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_visits", null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="visited_by")
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

@@ -255,6 +255,7 @@ const AuthArena = ({ initialIsLogin = true }) => {
                     <option value="Education / Training">Education / Training</option>
                     <option value="Restaurant / Food">Restaurant / Food</option>
                     <option value="Health & Wellness">Health & Wellness</option>
+                    <option value="Art & Culture">Art & Culture</option>
                     <option value="Other">Other</option>
                   </select>
                   <input

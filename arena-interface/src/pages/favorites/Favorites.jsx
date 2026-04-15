@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../components/publication/PublicationsList.css";
 import { BsTelephone, BsHeartFill } from "react-icons/bs";
-import api from "../../api";
+import api, { BASE_URL } from "../../api";
 import toast from "react-hot-toast";
 import { useAppContext } from "../../context/AppContext";
 import CompanyProfileModal from "../../components/profile/CompanyProfileModal";
@@ -34,7 +34,9 @@ const Favorites = () => {
         type: item.company_details?.contribution_type || "Shop",
         link: item.company_details?.website || "",
         description: item.company_details?.description || "",
-        logo: item.company_details?.logo_url || null,
+        logo: item.company_details?.logo_url && !item.company_details.logo_url.startsWith("http") 
+          ? `${BASE_URL}${item.company_details.logo_url}` 
+          : (item.company_details?.logo_url || null),
         location: item.company_details?.location || ""
       }));
       setFavoriteItems(mapped);

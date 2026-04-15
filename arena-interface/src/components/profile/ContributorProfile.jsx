@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import api from "../../api";
+import api, { BASE_URL } from "../../api";
 import toast from "react-hot-toast";
 import {
   FaPhone,
@@ -45,7 +45,7 @@ const ContributorProfile = () => {
         website: res.data.website || "",
         description: res.data.description || "",
         location: res.data.location || "",
-        logoUrl: res.data.logo_url || null,
+        logoUrl: res.data.logo_url && !res.data.logo_url.startsWith("http") ? `${BASE_URL}${res.data.logo_url}` : (res.data.logo_url || null),
       };
       setProfile(data);
       setTempProfile(data);
@@ -87,7 +87,9 @@ const ContributorProfile = () => {
       // Update local state with the actual URL returned from server if available
       const updatedData = {
         ...tempProfile,
-        logoUrl: res.data.logo_url || tempProfile.logoUrl
+        logoUrl: res.data.logo_url 
+          ? (res.data.logo_url.startsWith("http") ? res.data.logo_url : `${BASE_URL}${res.data.logo_url}`)
+          : tempProfile.logoUrl
       };
       
       setProfile(updatedData);

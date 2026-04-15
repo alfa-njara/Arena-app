@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { BsTelephone, BsGlobe, BsX, BsGeoAlt, BsTag } from "react-icons/bs";
 import { useAppContext } from "../../context/AppContext";
 import api from "../../api";
@@ -6,11 +6,17 @@ import api from "../../api";
 const CompanyProfileModal = ({ company, onClose }) => {
   const { isDarkMode } = useAppContext();
 
+  const visitLogged = useRef(false);
+
   useEffect(() => {
-    if (company?.id) {
-      api.post(`/companies/${company.id}/visit/`).catch(err => console.error("Visit tracking failed", err));
+    if (company?.id && !visitLogged.current) {
+      api.post(`/companies/${company.id}/visit/`)
+        .then(() => {
+          visitLogged.current = true;
+        })
+        .catch(err => console.error("Visit tracking failed", err));
     }
-  }, [company]);
+  }, [company?.id]);
 
   if (!company) return null;
 

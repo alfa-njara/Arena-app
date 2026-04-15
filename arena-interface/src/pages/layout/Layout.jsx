@@ -16,7 +16,8 @@ const Layout = () => {
 
   useEffect(() => {
     const userType = localStorage.getItem("user_type");
-    if (userType === "contributor") {
+    const isStaff = localStorage.getItem("is_staff") === "true";
+    if (userType === "contributor" && !isStaff) {
       checkProfile();
     }
   }, []);

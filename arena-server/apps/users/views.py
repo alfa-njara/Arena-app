@@ -32,7 +32,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 class CompanyListView(generics.ListAPIView):
-    queryset = Company.objects.filter(is_active=True)
+    queryset = Company.objects.filter(is_active=True, is_staff=False)
     serializer_class = CompanySerializer
     permission_classes = [AllowAny]
 
@@ -112,18 +112,50 @@ class CompanyVisitCreateView(APIView):
 
     def post(self, request, company_id):
         from rest_framework import generics
-        from .models import Company
+        from .models import Company, CompanyVisit
+        from django.utils import timezone
+        from datetime import timedelta
+        
         company = generics.get_object_or_404(Company, id=company_id)
         user = request.user
         
+        # Determine unique identifier for the visitor
+        remote_addr = request.META.get('HTTP_X_FORWARDED_FOR')
+        if remote_addr:
+            ip_address = remote_addr.split(',')[0].strip()
+        else:
+            ip_address = request.META.get('REMOTE_ADDR')
+            
+        # Debounce logic: ignore duplicates in the last 2 minutes
+        debounce_window = timezone.now() - timedelta(minutes=2)
+        
+        filters = {"company": company, "created_at__gte": debounce_window}
+        
+        if getattr(user, 'is_authenticated', False):
+            if hasattr(user, 'full_name'): # Customer
+                filters["customer"] = user
+            else: # Company User
+                filters["company_user"] = user
+        else:
+            # For anonymous visitors, we use their IP address to debounce
+            filters["ip_address"] = ip_address
+            # Only count if no anonymous visit from this IP in last 2 mins
+            filters["customer__isnull"] = True
+            filters["company_user__isnull"] = True
+            
+        # Check if a recent visit matching these filters already exists
+        if CompanyVisit.objects.filter(**filters).exists():
+            return Response({"status": "Visit already logged recently"}, status=200)
+
+        # Create new visit
         if getattr(user, 'is_authenticated', False):
             if hasattr(user, 'full_name'):
-                CompanyVisit.objects.create(company=company, customer=user)
+                CompanyVisit.objects.create(company=company, customer=user, ip_address=ip_address)
             else:
-                if str(user.id) != str(company_id):
-                    CompanyVisit.objects.create(company=company, company_user=user)
+                if str(user.id) != str(company_id): # Don't track visits to own profile
+                    CompanyVisit.objects.create(company=company, company_user=user, ip_address=ip_address)
         else:
-            CompanyVisit.objects.create(company=company)
+            CompanyVisit.objects.create(company=company, ip_address=ip_address)
             
         return Response({"status": "Visit logged"})
 
@@ -199,12 +231,45 @@ class AdminStatsView(APIView):
     permission_classes = [IsAdminUser]
 
     def get(self, request):
+        from django.utils import timezone
+        from datetime import timedelta
+        from django.db.models import Count
+        from .models import CompanyVisit, Favorite
+        
+        now = timezone.now()
+        thirty_days_ago = now - timedelta(days=30)
+        twenty_four_hours_ago = now - timedelta(hours=24)
+
         total_companies = Company.objects.filter(is_staff=False).count()
         active_companies = Company.objects.filter(is_staff=False, is_active=True).count()
         premium_companies = Company.objects.filter(is_staff=False, is_premium=True).count()
+        
         total_customers = Customer.objects.filter(is_staff=False).count()
         active_customers = Customer.objects.filter(is_staff=False, is_active=True).count()
-        
+
+        # Online now (users active within the last 5 minutes)
+        five_minutes_ago = now - timedelta(minutes=5)
+        online_companies = Company.objects.filter(is_staff=False, last_activity__gte=five_minutes_ago).count()
+        online_customers = Customer.objects.filter(is_staff=False, last_activity__gte=five_minutes_ago).count()
+
+        # Platform Activity
+        total_visits = CompanyVisit.objects.count()
+        total_favorites = Favorite.objects.count()
+
+        # Registration History (30 Days)
+        history = []
+        for i in range(29, -1, -1):
+            date = (now - timedelta(days=i)).date()
+            comp_count = Company.objects.filter(is_staff=False, created_at__date=date).count()
+            cust_count = Customer.objects.filter(is_staff=False, created_at__date=date).count()
+            history.append({
+                "date": date.strftime("%Y-%m-%d"),
+                "label": date.strftime("%b %d"),
+                "companies": comp_count,
+                "customers": cust_count,
+                "total": comp_count + cust_count
+            })
+
         # Recent signups (last 5, non-staff)
         recent_companies = CompanySerializer(Company.objects.filter(is_staff=False).order_by('-id')[:5], many=True).data
         recent_customers = CustomerSerializer(Customer.objects.filter(is_staff=False).order_by('-id')[:5], many=True).data
@@ -216,7 +281,12 @@ class AdminStatsView(APIView):
                 "premium_companies": premium_companies,
                 "total_customers": total_customers,
                 "active_customers": active_customers,
+                "online_now": online_companies + online_customers,
+                "total_engagement": total_visits + total_favorites,
+                "premium_ratio": round((premium_companies / total_companies * 100) if total_companies > 0 else 0, 1),
+                "total_registrations": total_companies + total_customers
             },
+            "history": history,
             "recent_signups": {
                 "companies": recent_companies,
                 "customers": recent_customers

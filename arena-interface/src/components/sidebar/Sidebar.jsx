@@ -21,6 +21,7 @@ const Sidebar = () => {
     { id: "settings", path: "/settings", icon: <BsGear size={24} />, label: "Settings" },
   ].filter(item => {
     if (item.id === "admin") return isStaff;
+    if (item.id === "dashboard" && isStaff) return false; // Hide dashboard for admins
     if (item.roles && !item.roles.includes(userType)) return false;
     return true;
   });

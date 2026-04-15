@@ -8,7 +8,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ["id", "name", "phone_number", "contribution_type", "website", "description", "location", "logo_url", "password", "is_premium"]
+        fields = ["id", "name", "phone_number", "contribution_type", "website", "description", "location", "logo_url", "password", "is_premium", "is_active", "created_at"]
 
     def create(self, validated_data):
         password = validated_data.pop("password")
@@ -64,7 +64,7 @@ class CustomerSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Customer
-        fields = ["id", "full_name", "phone_number", "password"]
+        fields = ["id", "full_name", "phone_number", "password", "is_active", "created_at"]
 
     def create(self, validated_data):
         password = validated_data.pop("password")
