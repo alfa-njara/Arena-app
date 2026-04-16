@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { BsTelephone, BsGlobe, BsX, BsGeoAlt, BsTag } from "react-icons/bs";
+import { BsTelephone, BsGlobe, BsX, BsGeoAlt, BsWhatsapp } from "react-icons/bs";
 import { useAppContext } from "../../context/AppContext";
 import api from "../../api";
 
@@ -20,278 +20,312 @@ const CompanyProfileModal = ({ company, onClose }) => {
 
   if (!company) return null;
 
+  const hasMap = !!company.location;
+
   return (
-    <div className={`company-modal-overlay ${isDarkMode ? "dark" : ""}`} onClick={onClose}>
+    <div className={`cpm-overlay ${isDarkMode ? "cpm-dark" : ""}`} onClick={onClose}>
       <div 
-        className="company-modal-content" 
+        className="cpm-modal"
         onClick={(e) => e.stopPropagation()}
       >
-        <button className="close-btn" onClick={onClose}>
-          <BsX size={28} />
+        {/* Close */}
+        <button className="cpm-close" onClick={onClose}>
+          <BsX size={22} />
         </button>
 
-        <div className="modal-header-section">
-          <div className="logo-container">
-            <img 
-              src={company.logo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${company.companyName}`} 
-              alt={company.companyName} 
-            />
-          </div>
-          <h2 className="company-title">{company.companyName}</h2>
-          <span className="category-badge">{company.type}</span>
-        </div>
+        <div className="cpm-layout">
+          {/* LEFT — Info */}
+          <div className="cpm-info">
+            <div className="cpm-header">
+              <div className="cpm-avatar">
+                <img 
+                  src={company.logo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${company.companyName}`} 
+                  alt={company.companyName} 
+                />
+              </div>
+              <div>
+                <h2 className="cpm-name">{company.companyName}</h2>
+                <span className="cpm-badge">{company.type}</span>
+              </div>
+            </div>
 
-        <div className="modal-body-section">
-          <p className="company-description">
-            {company.description || "No description provided."}
-          </p>
-
-          <div className="contact-grid">
-            {company.number && (
-              <div className="contact-item">
-                <div className="icon-wrapper bg-primary-light text-primary">
-                  <BsTelephone size={20} />
-                </div>
-                <div>
-                  <small>Phone</small>
-                  <strong>{company.number}</strong>
-                </div>
+            {company.description && (
+              <div className="cpm-section">
+                <h6 className="cpm-section-title">About</h6>
+                <p className="cpm-desc">{company.description}</p>
               </div>
             )}
-            
-            {company.link && (
-              <a 
-                href={company.link} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="contact-item link-item"
-                onClick={() => {
-                  api.post(`/companies/${company.id}/visit/`, { visit_type: 'website_click' })
-                    .catch(err => console.error("Website click tracking failed", err));
-                }}
-              >
-                <div className="icon-wrapper bg-success-light text-success">
-                  <BsGlobe size={20} />
-                </div>
-                <div>
-                  <small>Website</small>
-                  <strong>Visit Site</strong>
-                </div>
-              </a>
-            )}
 
-            {company.location && (
-              <div className="contact-item">
-                <div className="icon-wrapper bg-warning-light text-warning">
-                  <BsGeoAlt size={20} />
-                </div>
-                <div>
-                  <small>Location</small>
-                  <strong>{company.location}</strong>
-                </div>
+            <div className="cpm-section">
+              <h6 className="cpm-section-title">Contact</h6>
+              <div className="cpm-contacts">
+                {company.number && (
+                  <a
+                    href={`https://wa.me/${company.number.replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="cpm-row"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <BsWhatsapp className="cpm-row-icon" style={{ color: "#25d366" }} />
+                    <div>
+                      <small>WhatsApp</small>
+                      <span>{company.number}</span>
+                    </div>
+                  </a>
+                )}
+                
+                {company.link && (
+                  <a 
+                    href={company.link} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="cpm-row"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      api.post(`/companies/${company.id}/visit/`, { visit_type: 'website_click' })
+                        .catch(err => console.error(err));
+                    }}
+                  >
+                    <BsGlobe className="cpm-row-icon" style={{ color: "#2563eb" }} />
+                    <div>
+                      <small>Website</small>
+                      <span>{company.link.replace("https://", "").replace("http://", "")}</span>
+                    </div>
+                  </a>
+                )}
+
+                {company.location && (
+                  <div className="cpm-row">
+                    <BsGeoAlt className="cpm-row-icon" style={{ color: "#f59e0b" }} />
+                    <div>
+                      <small>Location</small>
+                      <span>{company.location}</span>
+                    </div>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
+
+          {/* RIGHT — Map */}
+          {hasMap && (
+            <div className="cpm-map">
+              <iframe
+                title="Map"
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(company.location)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                loading="lazy"
+                allowFullScreen
+              />
+            </div>
+          )}
         </div>
       </div>
 
       <style jsx="true">{`
-        .company-modal-overlay {
+        .cpm-overlay {
           position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(0, 0, 0, 0.6);
-          backdrop-filter: blur(8px);
+          inset: 0;
+          background: rgba(0,0,0,0.5);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 1050;
-          padding: 20px;
-          opacity: 0;
-          animation: fadeIn 0.3s forwards;
+          animation: cpmFade 0.2s ease forwards;
         }
-        
-        @keyframes fadeIn {
-          to { opacity: 1; }
-        }
+        @keyframes cpmFade { from { opacity:0 } to { opacity:1 } }
 
-        .company-modal-content {
-          background: var(--bg-surface);
-          color: var(--text-main);
-          width: 100%;
-          max-width: 500px;
-          border-radius: 24px;
+        .cpm-modal {
+          width: 90vw;
+          height: 90vh;
+          background: ${isDarkMode ? "#1a1a2e" : "#ffffff"};
+          border-radius: 16px;
           overflow: hidden;
           position: relative;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-          transform: translateY(20px);
-          opacity: 0;
-          animation: slideUp 0.4s forwards cubic-bezier(0.16, 1, 0.3, 1);
-          border: 1px solid var(--border-color);
+          box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+          animation: cpmUp 0.3s ease forwards;
+        }
+        @keyframes cpmUp { from { transform:translateY(20px);opacity:0 } to { transform:translateY(0);opacity:1 } }
+
+        .cpm-layout {
+          display: flex;
+          height: 100%;
         }
 
-        @keyframes slideUp {
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
+        /* ── LEFT PANEL ── */
+        .cpm-info {
+          width: 420px;
+          flex-shrink: 0;
+          overflow-y: auto;
+          padding: 32px;
+          border-right: 1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
         }
 
-        .close-btn {
-          position: absolute;
-          top: 15px;
-          right: 15px;
-          background: rgba(0,0,0,0.05);
+        .cpm-info::-webkit-scrollbar { width: 3px; }
+        .cpm-info::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.15); border-radius: 10px; }
+
+        .cpm-header {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 28px;
+          padding-bottom: 24px;
+          border-bottom: 1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
+        }
+
+        .cpm-avatar {
+          width: 64px;
+          height: 64px;
+          border-radius: 14px;
+          overflow: hidden;
+          flex-shrink: 0;
+          border: 2px solid ${isDarkMode ? "rgba(255,255,255,0.1)" : "#eee"};
+        }
+
+        .cpm-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .cpm-name {
+          font-size: 1.25rem;
+          font-weight: 700;
+          margin: 0 0 4px;
+          color: ${isDarkMode ? "#f1f5f9" : "#111"};
+        }
+
+        .cpm-badge {
+          font-size: 0.7rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: #2563eb;
+          background: rgba(37,99,235,0.08);
+          padding: 3px 10px;
+          border-radius: 6px;
+        }
+
+        .cpm-section {
+          margin-bottom: 24px;
+        }
+
+        .cpm-section-title {
+          font-size: 0.68rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 1.2px;
+          color: ${isDarkMode ? "#64748b" : "#94a3b8"};
+          margin: 0 0 12px;
+        }
+
+        .cpm-desc {
+          font-size: 0.9rem;
+          line-height: 1.7;
+          color: ${isDarkMode ? "#94a3b8" : "#555"};
+          margin: 0;
+        }
+
+        /* ── CONTACT ROWS ── */
+        .cpm-contacts {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+        }
+
+        .cpm-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 14px;
+          border-radius: 10px;
+          text-decoration: none;
+          color: inherit;
+          transition: background 0.15s ease;
+        }
+
+        a.cpm-row:hover {
+          background: ${isDarkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"};
+        }
+
+        .cpm-row-icon {
+          font-size: 18px;
+          flex-shrink: 0;
+        }
+
+        .cpm-row small {
+          display: block;
+          font-size: 0.65rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: ${isDarkMode ? "#64748b" : "#94a3b8"};
+          margin-bottom: 1px;
+        }
+
+        .cpm-row span {
+          font-size: 0.85rem;
+          font-weight: 500;
+          color: ${isDarkMode ? "#e2e8f0" : "#333"};
+        }
+
+        /* ── MAP ── */
+        .cpm-map {
+          flex: 1;
+          background: #e5e7eb;
+        }
+
+        .cpm-map iframe {
+          width: 100%;
+          height: 100%;
           border: none;
-          width: 36px;
-          height: 36px;
-          border-radius: 50%;
+          display: block;
+        }
+
+        /* ── CLOSE ── */
+        .cpm-close {
+          position: absolute;
+          top: 12px;
+          right: 12px;
+          width: 34px;
+          height: 34px;
+          border-radius: 8px;
+          border: 1px solid ${isDarkMode ? "rgba(255,255,255,0.1)" : "#eee"};
+          background: ${isDarkMode ? "rgba(255,255,255,0.05)" : "#fff"};
           display: flex;
           align-items: center;
           justify-content: center;
           cursor: pointer;
-          color: var(--text-main);
-          transition: background 0.2s;
-          z-index: 10;
+          color: ${isDarkMode ? "#94a3b8" : "#666"};
+          z-index: 20;
+          transition: all 0.15s ease;
         }
 
-        .close-btn:hover {
-          background: rgba(0,0,0,0.1);
+        .cpm-close:hover {
+          background: ${isDarkMode ? "rgba(255,255,255,0.1)" : "#f5f5f5"};
+          color: ${isDarkMode ? "#fff" : "#111"};
         }
 
-        .dark .close-btn {
-          background: rgba(255,255,255,0.1);
-        }
-        
-        .dark .close-btn:hover {
-          background: rgba(255,255,255,0.2);
-        }
-
-        .modal-header-section {
-          background: linear-gradient(135deg, rgba(37, 99, 235, 0.05), rgba(37, 99, 235, 0.1));
-          padding: 40px 20px 30px;
-          text-align: center;
-          border-bottom: 1px solid var(--border-color);
-        }
-
-        .dark .modal-header-section {
-          background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.2));
-        }
-
-        .logo-container {
-          width: 100px;
-          height: 100px;
-          margin: 0 auto 15px;
-          background: white;
-          border-radius: 24px;
-          padding: 5px;
-          box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-          overflow: hidden;
-          border: 2px solid white;
-        }
-
-        .dark .logo-container {
-          background: var(--bg-main);
-          border-color: var(--bg-surface);
-        }
-
-        .logo-container img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 18px;
-        }
-
-        .company-title {
-          font-weight: 800;
-          font-size: 1.6rem;
-          margin-bottom: 10px;
-          color: var(--text-main);
-        }
-
-        .category-badge {
-          display: inline-block;
-          background: var(--bg-main);
-          border: 1px solid var(--border-color);
-          padding: 6px 14px;
-          border-radius: 20px;
-          font-size: 0.85rem;
-          font-weight: 700;
-          color: #2563eb;
-          letter-spacing: 0.5px;
-        }
-
-        .modal-body-section {
-          padding: 30px;
-        }
-
-        .company-description {
-          font-size: 1.05rem;
-          line-height: 1.6;
-          color: var(--text-muted);
-          margin-bottom: 30px;
-          text-align: center;
-        }
-
-        .contact-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 15px;
-        }
-
-        .contact-item {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-          padding: 16px;
-          background: var(--bg-main);
-          border: 1px solid var(--border-color);
-          border-radius: 16px;
-          transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        .link-item {
-          text-decoration: none;
-          color: currentColor;
-        }
-
-        .link-item:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-          border-color: #2563eb;
-        }
-
-        .icon-wrapper {
-          width: 48px;
-          height: 48px;
-          border-radius: 14px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .bg-primary-light { background: rgba(37, 99, 235, 0.1); }
-        .text-primary { color: #2563eb; }
-        .bg-success-light { background: rgba(16, 185, 129, 0.1); }
-        .text-success { color: #10b981; }
-        .bg-warning-light { background: rgba(245, 158, 11, 0.1); }
-        .text-warning { color: #f59e0b; }
-
-        .contact-item small {
-          display: block;
-          color: var(--text-muted);
-          font-size: 0.8rem;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 2px;
-        }
-
-        .contact-item strong {
-          display: block;
-          font-size: 1.05rem;
-          color: var(--text-main);
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+          .cpm-modal {
+            width: 95vw;
+            height: 93vh;
+            border-radius: 12px;
+          }
+          .cpm-layout {
+            flex-direction: column;
+          }
+          .cpm-info {
+            width: 100%;
+            max-height: 50%;
+            border-right: none;
+            border-bottom: 1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
+            padding: 20px;
+          }
+          .cpm-map {
+            flex: 1;
+          }
         }
       `}</style>
     </div>

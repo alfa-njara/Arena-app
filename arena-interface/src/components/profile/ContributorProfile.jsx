@@ -59,6 +59,43 @@ const ContributorProfile = () => {
     setTempProfile({ ...tempProfile, [e.target.name]: e.target.value });
   };
 
+  const handleGetLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    
+    const toastId = toast.loading("Detecting location...");
+    
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+          const data = await res.json();
+          // Extract a shorter address if possible, otherwise use display_name
+          let address = data.display_name;
+          if (data.address) {
+            const { road, suburb, city, town, village, country } = data.address;
+            const parts = [road, suburb, city || town || village, country].filter(Boolean);
+            if (parts.length > 0) address = parts.join(", ");
+          }
+          if (!address) address = `${latitude}, ${longitude}`;
+          
+          setTempProfile(prev => ({ ...prev, location: address }));
+          toast.success("Location detected!", { id: toastId });
+        } catch (err) {
+          console.error("Geocoding failed", err);
+          setTempProfile(prev => ({ ...prev, location: `${latitude}, ${longitude}` }));
+          toast.success("Coordinates detected!", { id: toastId });
+        }
+      },
+      (error) => {
+        toast.error("Unable to retrieve your location", { id: toastId });
+      }
+    );
+  };
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -206,13 +243,23 @@ const ContributorProfile = () => {
                       <label className="form-label fw-semibold small text-muted">
                         Location
                       </label>
-                      <input
-                        type="text"
-                        name="location"
-                        className="form-control custom-input"
-                        value={tempProfile.location}
-                        onChange={handleChange}
-                      />
+                      <div className="d-flex gap-2">
+                        <input
+                          type="text"
+                          name="location"
+                          className="form-control custom-input"
+                          value={tempProfile.location}
+                          onChange={handleChange}
+                        />
+                        <button
+                          type="button"
+                          className="btn btn-outline-dark rounded-3 d-flex align-items-center justify-content-center"
+                          onClick={handleGetLocation}
+                          title="Detect my location"
+                        >
+                          <FaMapMarkerAlt />
+                        </button>
+                      </div>
                     </div>
                     <div className="col-12">
                       <label className="form-label fw-semibold small text-muted">
@@ -304,6 +351,29 @@ const ContributorProfile = () => {
                         </div>
                       </div>
                     </div>
+                    {profile.location && (
+                      <div className="col-12">
+                        <div className="p-4 rounded-4 border border-light-subtle bg-white shadow-xs">
+                          <div className="d-flex align-items-center mb-3 text-muted small fw-bold text-uppercase">
+                            <FaMapMarkerAlt className="me-2 opacity-50" /> Location
+                          </div>
+                          <p className="fw-bold text-dark mb-3" style={{ fontSize: "1.05rem" }}>
+                            {profile.location}
+                          </p>
+                          <div style={{ borderRadius: "12px", overflow: "hidden" }}>
+                            <iframe
+                              title="My Business Location"
+                              width="100%"
+                              height="220"
+                              style={{ border: "none", display: "block" }}
+                              src={`https://maps.google.com/maps?q=${encodeURIComponent(profile.location)}&t=&z=15&ie=UTF8&iwloc=&output=embed`}
+                              loading="lazy"
+                              allowFullScreen
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
