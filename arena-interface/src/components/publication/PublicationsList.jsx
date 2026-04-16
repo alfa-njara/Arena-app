@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./PublicationsList.css";
-import { BsTelephone, BsHeart, BsHeartFill, BsGrid, BsFire, BsClock, BsWhatsapp, BsStarFill } from "react-icons/bs";
+import { BsTelephone, BsHeart, BsHeartFill, BsGrid, BsFire, BsClock, BsWhatsapp, BsStarFill, BsGeoAlt } from "react-icons/bs";
 import toast from "react-hot-toast";
 import api, { BASE_URL } from "../../api";
 import { useAppContext } from "../../context/AppContext";
@@ -259,6 +259,15 @@ const PublicationsList = () => {
                         <BsStarFill size={16} />
                       </div>
                     )}
+                    
+                    <div className="card-hover-overlay">
+                      <div className="hover-content">
+                        <BsGeoAlt size={20} className="mb-2" />
+                        <span className="location-text">{pub.location || "Location not specified"}</span>
+                        <span className="click-hint">Cliquez pour voir le profil</span>
+                      </div>
+                    </div>
+
                     <div className="pub-card-header d-flex justify-content-between align-items-center mb-3">
                       <div className="user-info d-flex align-items-center gap-2">
                         <img
