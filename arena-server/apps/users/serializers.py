@@ -5,10 +5,15 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 # --- Company ---
 class CompanySerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    total_views = serializers.IntegerField(read_only=True, default=0)
+    total_visits = serializers.IntegerField(read_only=True, default=0)
+    total_favorites = serializers.IntegerField(read_only=True, default=0)
+    ranking_score = serializers.IntegerField(read_only=True, default=0)
 
     class Meta:
         model = Company
-        fields = ["id", "name", "phone_number", "contribution_type", "website", "description", "location", "logo_url", "password", "is_premium", "is_active", "created_at"]
+        fields = ["id", "name", "phone_number", "contribution_type", "website", "description", "location", "logo_url", "password", "is_premium", "is_active", "created_at", "total_views", "total_visits", "total_favorites", "ranking_score"]
+        read_only_fields = ["total_views", "total_visits", "total_favorites", "ranking_score"]
 
     def create(self, validated_data):
         password = validated_data.pop("password")

@@ -54,7 +54,7 @@ const AuthArena = ({ initialIsLogin = true }) => {
 
         if (signupType === "contributor") {
            localStorage.setItem("contributorData", JSON.stringify({ companyName: name || "Company", phone: form.number }));
-           navigate("/contributor/dashboard");
+           navigate("/home");
         } else {
            navigate("/home");
         }

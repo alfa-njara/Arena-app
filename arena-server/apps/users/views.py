@@ -7,6 +7,7 @@ from .serializers import (
     FavoriteSerializer
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
+from django.db.models import Count, Q, Case, When, Value, IntegerField, ExpressionWrapper
 
 # --- Signup ---
 class CompanyCreateView(generics.CreateAPIView):
@@ -32,9 +33,39 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 
 class CompanyListView(generics.ListAPIView):
-    queryset = Company.objects.filter(is_active=True, is_staff=False)
     serializer_class = CompanySerializer
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        # Annotate with counts of various company-related interactions
+        return Company.objects.filter(is_active=True, is_staff=False).annotate(
+            total_views=Count(
+                'visited_by', 
+                filter=Q(visited_by__visit_type='profile_view'),
+                distinct=True
+            ),
+            total_visits=Count(
+                'visited_by', 
+                filter=Q(visited_by__visit_type='website_click'),
+                distinct=True
+            ),
+            total_favorites=Count(
+                'favorited_by',
+                distinct=True
+            )
+        ).annotate(
+            ranking_score=ExpressionWrapper(
+                (Count('visited_by', filter=Q(visited_by__visit_type='profile_view'), distinct=True) * 1) + 
+                (Count('visited_by', filter=Q(visited_by__visit_type='website_click'), distinct=True) * 3) + 
+                (Count('favorited_by', distinct=True) * 5) +
+                Case(
+                    When(is_premium=True, then=Value(15)),
+                    default=Value(0),
+                    output_field=IntegerField()
+                ),
+                output_field=IntegerField()
+            )
+        ).order_by('-ranking_score', '-created_at')
 
 class CompanyProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = CompanySerializer
@@ -129,43 +160,51 @@ class CompanyVisitCreateView(APIView):
         user = request.user
         visit_type = request.data.get('visit_type', 'profile_view')
         
-        # Determine unique identifier for the visitor
+        # 1. Determine unique identifier for the visitor (Robust identification)
+        ip_address = None
         remote_addr = request.META.get('HTTP_X_FORWARDED_FOR')
         if remote_addr:
             ip_address = remote_addr.split(',')[0].strip()
         else:
             ip_address = request.META.get('REMOTE_ADDR')
             
-        # Debounce logic: ignore duplicate of same TYPE in the last 60 seconds
-        debounce_window = timezone.now() - timedelta(seconds=60)
-        
-        filters = {"company": company, "created_at__gte": debounce_window, "visit_type": visit_type}
-        
+        # 2. Build visitor filters for history check
+        visitor_filters = {"company": company, "visit_type": visit_type}
         if getattr(user, 'is_authenticated', False):
             if hasattr(user, 'full_name'): # Customer
-                filters["customer"] = user
+                visitor_filters["customer"] = user
             else: # Company User
-                filters["company_user"] = user
+                visitor_filters["company_user"] = user
         else:
-            filters["ip_address"] = ip_address
-            filters["customer__isnull"] = True
-            filters["company_user__isnull"] = True
-            
-        # Check if a recent visit matching these filters already exists
-        if CompanyVisit.objects.filter(**filters).exists():
-            return Response({"status": f"Recently logged {visit_type}"}, status=200)
+            visitor_filters["ip_address"] = ip_address
+            visitor_filters["customer__isnull"] = True
+            visitor_filters["company_user__isnull"] = True
 
-        # Create new visit
+        # 3. Check for Anti-Spam Limits
+        now = timezone.now()
+        
+        # BURST PROTECTION: Skip if any visit in the last 3 seconds
+        burst_threshold = now - timedelta(seconds=3)
+        if CompanyVisit.objects.filter(**visitor_filters, created_at__gte=burst_threshold).exists():
+            return Response({"status": "Burst protected", "detail": "Too fast"}, status=200)
+
+        # 15-MINUTE QUOTA: Max 3 visits of this type per 15 minutes
+        quota_threshold = now - timedelta(minutes=15)
+        recent_count = CompanyVisit.objects.filter(**visitor_filters, created_at__gte=quota_threshold).count()
+        if recent_count >= 3:
+            return Response({"status": "Quota reached", "detail": "Max 3 views per 15 mins"}, status=200)
+
+        # 4. Create new visit
         if getattr(user, 'is_authenticated', False):
-            if hasattr(user, 'full_name'):
+            if hasattr(user, 'full_name'): # Customer
                 CompanyVisit.objects.create(company=company, customer=user, ip_address=ip_address, visit_type=visit_type)
-            else:
+            else: # Company User
                 if str(user.id) != str(company_id): # Don't track visits to own profile
                     CompanyVisit.objects.create(company=company, company_user=user, ip_address=ip_address, visit_type=visit_type)
-        else:
+        else: # Anonymous
             CompanyVisit.objects.create(company=company, ip_address=ip_address, visit_type=visit_type)
             
-        return Response({"status": f"{visit_type} logged"})
+        return Response({"status": "Success", "visit_type": visit_type})
 
 class FavoriteListCreateView(generics.ListCreateAPIView):
     serializer_class = FavoriteSerializer

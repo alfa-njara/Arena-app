@@ -20,20 +20,21 @@
 /* --- Carte Glassmorphism --- */
 .pub-glass-card {
   background: var(--card-bg);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid var(--card-border);
-  border-radius: 18px;
-  padding: 16px;
+  border-radius: 22px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  transition: all 0.25s ease-in-out;
+  transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .pub-glass-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  border-color: rgba(13, 110, 253, 0.2);
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border-color: rgba(13, 110, 253, 0.3);
 }
 
 /* --- Header & Avatar --- */
@@ -44,12 +45,19 @@
   object-fit: cover;
 }
 
+.company-title {
+  font-size: 0.95rem;
+  line-height: 1.2;
+  word-break: break-word;
+  flex: 1;
+}
+
 .badge-category {
   font-weight: 700;
   border-radius: 6px;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-  /* Les couleurs sont gérées en ligne (inline styles) dans le JSX */
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
 }
 
 /* --- Corps de la carte --- */
@@ -68,9 +76,18 @@
 }
 
 .phone-info {
-  font-size: 0.7rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 600;
   color: var(--text-muted);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.phone-info:hover {
+  color: #25d366;
+  transform: scale(1.05);
 }
 
 /* --- BOUTONS FAVORIS (Coeur) --- */
