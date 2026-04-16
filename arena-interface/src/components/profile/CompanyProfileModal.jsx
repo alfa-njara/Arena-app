@@ -4,11 +4,19 @@ import { useAppContext } from "../../context/AppContext";
 import api from "../../api";
 
 const CompanyProfileModal = ({ company, onClose }) => {
-  const { isDarkMode } = useAppContext();
-
   const visitLogged = useRef(false);
-
-  // Remove automatic tracking to prevent double counting from component lifecycle/StrictMode
+  const { isDarkMode } = useAppContext();
+  
+  useEffect(() => {
+    if (company?.id && !visitLogged.current) {
+      visitLogged.current = true;
+      api.post(`/companies/${company.id}/visit/`, { visit_type: 'profile_view' })
+        .catch(err => {
+          console.error("Profile view tracking failed", err);
+          visitLogged.current = false;
+        });
+    }
+  }, [company?.id]);
 
   if (!company) return null;
 
