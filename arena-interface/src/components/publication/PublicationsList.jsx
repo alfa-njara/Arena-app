@@ -289,15 +289,15 @@ const PublicationsList = () => {
                     </div>
                   )}
 
-                    <div className="card-hover-overlay">
-                      <div className="hover-content">
-                        <BsGeoAlt size={22} className="mb-2" />
-                        <span className="location-text">
-                          {pub.location || "Localisation non spécifiée"}
-                        </span>
-                        <span className="click-hint">Cliquez pour voir le profil</span>
-                      </div>
+                  <div className="card-hover-overlay">
+                    <div className="hover-content">
+                      <BsGeoAlt size={22} className="mb-2" />
+                      <span className="location-text">
+                        {pub.location || "Localisation non spécifiée"}
+                      </span>
+                      <span className="click-hint">Click to view profile</span>
                     </div>
+                  </div>
 
                   <div className="pub-card-header d-flex justify-content-between align-items-center mb-3">
                     <div className="user-info d-flex align-items-center gap-2">
