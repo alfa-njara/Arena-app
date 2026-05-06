@@ -10,7 +10,10 @@ const CompanyProfileModal = ({ company, onClose }) => {
   useEffect(() => {
     if (company?.id && !visitLogged.current) {
       visitLogged.current = true;
-      api.post(`/companies/${company.id}/visit/`, { visit_type: 'profile_view' })
+      api.post(`/companies/${company.id}/visit/`, { 
+        visit_type: 'profile_view',
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      })
         .catch(err => {
           console.error("Profile view tracking failed", err);
           visitLogged.current = false;
@@ -83,14 +86,63 @@ const CompanyProfileModal = ({ company, onClose }) => {
                     className="cpm-row"
                     onClick={(e) => {
                       e.stopPropagation();
-                      api.post(`/companies/${company.id}/visit/`, { visit_type: 'website_click' })
+                      api.post(`/companies/${company.id}/visit/`, { 
+                        visit_type: 'website_click',
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                      })
                         .catch(err => console.error(err));
                     }}
                   >
                     <BsGlobe className="cpm-row-icon" style={{ color: "#2563eb" }} />
                     <div>
-                      <small>Website</small>
+                      <small>Website 1</small>
                       <span>{company.link.replace("https://", "").replace("http://", "")}</span>
+                    </div>
+                  </a>
+                )}
+
+                {company.is_premium && company.website_2 && (
+                   <a 
+                    href={company.website_2} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="cpm-row"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      api.post(`/companies/${company.id}/visit/`, { 
+                        visit_type: 'website_click',
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                      })
+                        .catch(err => console.error(err));
+                    }}
+                  >
+                    <BsGlobe className="cpm-row-icon" style={{ color: "#059669" }} />
+                    <div>
+                      <small>Website 2</small>
+                      <span>{company.website_2.replace("https://", "").replace("http://", "")}</span>
+                    </div>
+                  </a>
+                )}
+
+                {company.is_premium && company.website_3 && (
+                   <a 
+                    href={company.website_3} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="cpm-row"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      api.post(`/companies/${company.id}/visit/`, { 
+                        visit_type: 'website_click',
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                      })
+                        .catch(err => console.error(err));
+                    }}
+                  >
+                    <BsGlobe className="cpm-row-icon" style={{ color: "#7c3aed" }} />
+                    <div>
+                      <small>Website 3</small>
+                      <span>{company.website_3.replace("https://", "").replace("http://", "")}</span>
                     </div>
                   </a>
                 )}

@@ -12,7 +12,7 @@ class CompanySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ["id", "name", "phone_number", "contribution_type", "website", "description", "location", "logo_url", "password", "is_premium", "is_active", "created_at", "total_views", "total_visits", "total_favorites", "ranking_score"]
+        fields = ["id", "name", "phone_number", "contribution_type", "website", "website_2", "website_3", "description", "location", "logo_url", "password", "is_premium", "is_active", "created_at", "total_views", "total_visits", "total_favorites", "ranking_score"]
         read_only_fields = ["total_views", "total_visits", "total_favorites", "ranking_score"]
 
     def create(self, validated_data):
@@ -123,7 +123,7 @@ class FavoriteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Favorite
-        fields = ["id", "customer", "company_user", "company", "company_details", "created_at"]
+        fields = ["id", "customer", "company_user", "company", "company_details", "timezone", "created_at"]
         read_only_fields = ["customer", "company_user"]
 
 # --- Change Password ---

@@ -113,23 +113,38 @@ class CompanyStatsView(APIView):
         feed = []
         for f in recent_favorites:
             name = f.customer.full_name if f.customer else (f.company_user.name if f.company_user else "Unknown")
-            feed.append({"type": "favorite", "user": name, "date": f.created_at})
+            feed.append({
+                "type": "favorite", 
+                "user": name, 
+                "date": f.created_at,
+                "timezone": f.timezone
+            })
         for v in recent_visits:
             name = v.customer.full_name if v.customer else (v.company_user.name if v.company_user else "Anonymous")
             feed.append({
                 "type": "visit", 
                 "user": name, 
                 "date": v.created_at, 
-                "visit_type": v.visit_type
+                "visit_type": v.visit_type,
+                "timezone": v.timezone
             })
             
         feed.sort(key=lambda x: x['date'], reverse=True)
         feed = feed[:15]
         
+        import zoneinfo
         for item in feed:
-            item['time_label'] = item['date'].strftime("%H:%M")
-            item['label'] = item['date'].strftime("%b %d")
+            item_tz = item.get('timezone', 'UTC')
+            try:
+                tz = zoneinfo.ZoneInfo(item_tz)
+                local_date = item['date'].astimezone(tz)
+            except Exception:
+                local_date = item['date']
+                
+            item['time_label'] = local_date.strftime("%H:%M")
+            item['label'] = local_date.strftime("%b %d")
             del item['date']
+            if 'timezone' in item: del item['timezone']
 
         total_views = CompanyVisit.objects.filter(company=user, visit_type='profile_view').count()
         total_visits = CompanyVisit.objects.filter(company=user, visit_type='website_click').count()
@@ -159,6 +174,7 @@ class CompanyVisitCreateView(APIView):
         company = generics.get_object_or_404(Company, id=company_id)
         user = request.user
         visit_type = request.data.get('visit_type', 'profile_view')
+        timezone_name = request.data.get('timezone', 'UTC')
         
         # 1. Determine unique identifier for the visitor (Robust identification)
         ip_address = None
@@ -197,12 +213,12 @@ class CompanyVisitCreateView(APIView):
         # 4. Create new visit
         if getattr(user, 'is_authenticated', False):
             if hasattr(user, 'full_name'): # Customer
-                CompanyVisit.objects.create(company=company, customer=user, ip_address=ip_address, visit_type=visit_type)
+                CompanyVisit.objects.create(company=company, customer=user, ip_address=ip_address, visit_type=visit_type, timezone=timezone_name)
             else: # Company User
                 if str(user.id) != str(company_id): # Don't track visits to own profile
-                    CompanyVisit.objects.create(company=company, company_user=user, ip_address=ip_address, visit_type=visit_type)
+                    CompanyVisit.objects.create(company=company, company_user=user, ip_address=ip_address, visit_type=visit_type, timezone=timezone_name)
         else: # Anonymous
-            CompanyVisit.objects.create(company=company, ip_address=ip_address, visit_type=visit_type)
+            CompanyVisit.objects.create(company=company, ip_address=ip_address, visit_type=visit_type, timezone=timezone_name)
             
         return Response({"status": "Success", "visit_type": visit_type})
 
@@ -218,10 +234,11 @@ class FavoriteListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         user = self.request.user
+        timezone_name = self.request.data.get('timezone', 'UTC')
         if hasattr(user, 'full_name'):
-            serializer.save(customer=user)
+            serializer.save(customer=user, timezone=timezone_name)
         else:
-            serializer.save(company_user=user)
+            serializer.save(company_user=user, timezone=timezone_name)
 
     def create(self, request, *args, **kwargs):
         company_id = request.data.get('company')

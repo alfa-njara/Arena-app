@@ -26,6 +26,8 @@ class Company(AbstractBaseUser, PermissionsMixin):
     phone_number = models.CharField(max_length=20, unique=True)
     contribution_type = models.CharField(max_length=50, blank=True)
     website = models.URLField(blank=True)
+    website_2 = models.URLField(blank=True)
+    website_3 = models.URLField(blank=True)
     description = models.CharField(max_length=500, blank=True)
     location = models.CharField(max_length=255, blank=True, null=True)
     logo_url = models.ImageField(upload_to='company_logos/', blank=True, null=True)
@@ -111,6 +113,7 @@ class Favorite(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name="favorites", null=True, blank=True)
     company_user = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="company_favorites", null=True, blank=True)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="favorited_by")
+    timezone = models.CharField(max_length=50, default='UTC')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -130,6 +133,7 @@ class CompanyVisit(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="visited_by")
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     visit_type = models.CharField(max_length=20, choices=VISIT_TYPES, default='profile_view', db_index=True)
+    timezone = models.CharField(max_length=50, default='UTC')
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

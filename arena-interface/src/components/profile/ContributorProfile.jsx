@@ -17,11 +17,14 @@ const DEFAULT_PROFILE = {
   companyName: "Arena Boutique",
   phone: "+261 34 00 000 00",
   category: "Shop",
-  website: "https://arena-mg.com",
+    website: "https://arena-mg.com",
+  website_2: "",
+  website_3: "",
   description:
     "We are an Arena partner boutique specializing in innovative and local products from Madagascar.",
   location: "Antananarivo, MG",
   logoUrl: null,
+  is_premium: false,
 };
 
 const ContributorProfile = () => {
@@ -43,9 +46,12 @@ const ContributorProfile = () => {
         phone: res.data.phone_number || "",
         category: res.data.contribution_type || "Shop",
         website: res.data.website || "",
+        website_2: res.data.website_2 || "",
+        website_3: res.data.website_3 || "",
         description: res.data.description || "",
         location: res.data.location || "",
         logoUrl: res.data.logo_url && !res.data.logo_url.startsWith("http") ? `${BASE_URL}${res.data.logo_url}` : (res.data.logo_url || null),
+        is_premium: res.data.is_premium || false,
       };
       setProfile(data);
       setTempProfile(data);
@@ -112,6 +118,8 @@ const ContributorProfile = () => {
       formData.append("phone_number", tempProfile.phone);
       formData.append("contribution_type", tempProfile.category);
       formData.append("website", tempProfile.website);
+      formData.append("website_2", tempProfile.website_2);
+      formData.append("website_3", tempProfile.website_3);
       formData.append("description", tempProfile.description);
       formData.append("location", tempProfile.location);
       
@@ -126,7 +134,8 @@ const ContributorProfile = () => {
         ...tempProfile,
         logoUrl: res.data.logo_url 
           ? (res.data.logo_url.startsWith("http") ? res.data.logo_url : `${BASE_URL}${res.data.logo_url}`)
-          : tempProfile.logoUrl
+          : tempProfile.logoUrl,
+        is_premium: res.data.is_premium || false,
       };
       
       setProfile(updatedData);
@@ -217,7 +226,7 @@ const ContributorProfile = () => {
                     </div>
                     <div className="col-md-6">
                       <label className="form-label fw-semibold small text-muted">
-                        Website
+                        Website 1 (Main)
                       </label>
                       <input
                         type="text"
@@ -227,6 +236,34 @@ const ContributorProfile = () => {
                         onChange={handleChange}
                       />
                     </div>
+                    {tempProfile.is_premium && (
+                      <>
+                        <div className="col-md-6">
+                          <label className="form-label fw-semibold small text-muted">
+                            Website 2 (Premium)
+                          </label>
+                          <input
+                            type="text"
+                            name="website_2"
+                            className="form-control custom-input"
+                            value={tempProfile.website_2}
+                            onChange={handleChange}
+                          />
+                        </div>
+                        <div className="col-md-6">
+                          <label className="form-label fw-semibold small text-muted">
+                            Website 3 (Premium)
+                          </label>
+                          <input
+                            type="text"
+                            name="website_3"
+                            className="form-control custom-input"
+                            value={tempProfile.website_3}
+                            onChange={handleChange}
+                          />
+                        </div>
+                      </>
+                    )}
                     <div className="col-12">
                       <label className="form-label fw-semibold small text-muted">
                         Description
@@ -329,26 +366,60 @@ const ContributorProfile = () => {
                       </div>
                     </div>
                     <div className="col-12">
-                      <div className="d-flex align-items-center p-4 bg-dark rounded-4 shadow-lg text-white">
-                        <div className="bg-white bg-opacity-20 p-3 rounded-3 me-4">
-                          <FaGlobe size={24} />
+                      <div className="d-flex flex-column gap-3 p-4 bg-dark rounded-4 shadow-lg text-white">
+                        <div className="d-flex align-items-center">
+                          <div className="bg-white bg-opacity-20 p-3 rounded-3 me-4">
+                            <FaGlobe size={24} />
+                          </div>
+                          <div className="flex-grow-1">
+                            <small
+                              className="text-white-50 d-block fw-bold text-uppercase"
+                              style={{ fontSize: "0.65rem" }}
+                            >
+                              Official Website
+                            </small>
+                            <a
+                              href={profile.website}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-white text-decoration-none fw-bold fs-5"
+                            >
+                              {profile.website.replace("https://", "").replace("http://", "")}
+                            </a>
+                          </div>
                         </div>
-                        <div className="flex-grow-1">
-                          <small
-                            className="text-white-50 d-block fw-bold text-uppercase"
-                            style={{ fontSize: "0.65rem" }}
-                          >
-                            Official Website
-                          </small>
-                          <a
-                            href={profile.website}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-white text-decoration-none fw-bold fs-5"
-                          >
-                            {profile.website.replace("https://", "")}
-                          </a>
-                        </div>
+
+                        {profile.is_premium && profile.website_2 && (
+                          <div className="d-flex align-items-center border-top border-white border-opacity-10 pt-3">
+                             <div className="bg-white bg-opacity-10 p-2 rounded-3 me-4">
+                              <FaGlobe size={18} />
+                            </div>
+                            <div className="flex-grow-1">
+                              <small className="text-white-50 d-block fw-bold text-uppercase" style={{ fontSize: "0.6rem" }}>
+                                Alternative Link 1
+                              </small>
+                              <a href={profile.website_2} target="_blank" rel="noreferrer" className="text-white text-decoration-none fw-bold">
+                                {profile.website_2.replace("https://", "").replace("http://", "")}
+                              </a>
+                            </div>
+                          </div>
+                        )}
+
+                        {profile.is_premium && profile.website_3 && (
+                          <div className="d-flex align-items-center border-top border-white border-opacity-10 pt-3">
+                             <div className="bg-white bg-opacity-10 p-2 rounded-3 me-4">
+                              <FaGlobe size={18} />
+                            </div>
+                            <div className="flex-grow-1">
+                              <small className="text-white-50 d-block fw-bold text-uppercase" style={{ fontSize: "0.6rem" }}>
+                                Alternative Link 2
+                              </small>
+                              <a href={profile.website_3} target="_blank" rel="noreferrer" className="text-white text-decoration-none fw-bold">
+                                {profile.website_3.replace("https://", "").replace("http://", "")}
+                              </a>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     {profile.location && (

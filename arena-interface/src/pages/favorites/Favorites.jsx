@@ -33,11 +33,14 @@ const Favorites = () => {
         number: item.company_details?.phone_number || "",
         type: item.company_details?.contribution_type || "Shop",
         link: item.company_details?.website || "",
+        website_2: item.company_details?.website_2 || "",
+        website_3: item.company_details?.website_3 || "",
         description: item.company_details?.description || "",
         logo: item.company_details?.logo_url && !item.company_details.logo_url.startsWith("http") 
           ? `${BASE_URL}${item.company_details.logo_url}` 
           : (item.company_details?.logo_url || null),
-        location: item.company_details?.location || ""
+        location: item.company_details?.location || "",
+        is_premium: item.company_details?.is_premium || false
       }));
       setFavoriteItems(mapped);
     } catch (err) {
@@ -134,21 +137,25 @@ const Favorites = () => {
                           >
                             <BsHeartFill size={16} />
                           </button>
-                           {pub.link && (
-                            <a
-                              href={pub.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="minimal-visit-btn"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                api.post(`/companies/${pub.id}/visit/`, { visit_type: 'website_click' })
-                                  .catch(err => console.error("Website click tracking failed", err));
-                              }}
-                            >
-                              Visit Site
-                            </a>
-                           )}
+                          <button
+                            className="minimal-visit-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (pub.link) {
+                                window.open(pub.link, "_blank", "noopener,noreferrer");
+                              } else {
+                                setSelectedCompany(pub);
+                              }
+                              
+                              api.post(`/companies/${pub.id}/visit/`, { 
+                                visit_type: 'website_click',
+                                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                              })
+                                .catch(err => console.error("Visit tracking failed", err));
+                            }}
+                          >
+                            Visit
+                          </button>
                         </div>
                       </div>
                     </div>

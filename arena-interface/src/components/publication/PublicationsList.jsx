@@ -51,6 +51,8 @@ const PublicationsList = () => {
         number: item.phone_number,
         type: item.contribution_type,
         link: item.website,
+        website_2: item.website_2,
+        website_3: item.website_3,
         description: item.description,
         logo:
           item.logo_url && !item.logo_url.startsWith("http")
@@ -90,7 +92,10 @@ const PublicationsList = () => {
         newFavs.delete(companyId);
         setFavorites(newFavs);
       } else {
-        await api.post("/favorites/", { company: companyId });
+        await api.post("/favorites/", { 
+          company: companyId,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+        });
         const newFavs = new Set(favorites);
         newFavs.add(companyId);
         setFavorites(newFavs);
@@ -359,27 +364,27 @@ const PublicationsList = () => {
                             <BsHeart size={16} />
                           )}
                         </button>
-                        <a
-                          href={pub.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                        <button
                           className="minimal-visit-btn"
                           onClick={(e) => {
                             e.stopPropagation();
-                            api
-                              .post(`/companies/${pub.id}/visit/`, {
+                            if (pub.link) {
+                               window.open(pub.link, "_blank", "noopener,noreferrer");
+                            } else {
+                               setSelectedCompany(pub);
+                            }
+                            
+                            // Tracking: Click on Visit counts as a website click or profile visit
+                            api.post(`/companies/${pub.id}/visit/`, {
                                 visit_type: "website_click",
-                              })
-                              .catch((err) =>
-                                console.error(
-                                  "Website click tracking failed",
-                                  err,
-                                ),
-                              );
+                                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                            }).catch((err) =>
+                                console.error("Visit tracking failed", err)
+                            );
                           }}
                         >
                           Visit
-                        </a>
+                        </button>
                       </div>
                     </div>
                   </div>
