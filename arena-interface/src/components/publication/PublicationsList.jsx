@@ -92,9 +92,9 @@ const PublicationsList = () => {
         newFavs.delete(companyId);
         setFavorites(newFavs);
       } else {
-        await api.post("/favorites/", { 
+        await api.post("/favorites/", {
           company: companyId,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         });
         const newFavs = new Set(favorites);
         newFavs.add(companyId);
@@ -228,8 +228,10 @@ const PublicationsList = () => {
         }
 
         .pub-glass-card.premium-card:hover {
-           border-color: rgba(255, 184, 0, 0.8);
-           box-shadow: 0 0 20px rgba(255, 184, 0, 0.25);
+            transform: scale(1.03);
+            border-color: rgba(255, 184, 0, 0.8);
+            box-shadow: 0 0 20px rgba(255, 184, 0, 0.25);
+            transition: all 0.2s ease; 
         }
 
         .premium-star-badge {
@@ -369,18 +371,26 @@ const PublicationsList = () => {
                           onClick={(e) => {
                             e.stopPropagation();
                             if (pub.link) {
-                               window.open(pub.link, "_blank", "noopener,noreferrer");
+                              window.open(
+                                pub.link,
+                                "_blank",
+                                "noopener,noreferrer",
+                              );
                             } else {
-                               setSelectedCompany(pub);
+                              setSelectedCompany(pub);
                             }
-                            
+
                             // Tracking: Click on Visit counts as a website click or profile visit
-                            api.post(`/companies/${pub.id}/visit/`, {
+                            api
+                              .post(`/companies/${pub.id}/visit/`, {
                                 visit_type: "website_click",
-                                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                            }).catch((err) =>
-                                console.error("Visit tracking failed", err)
-                            );
+                                timezone:
+                                  Intl.DateTimeFormat().resolvedOptions()
+                                    .timeZone,
+                              })
+                              .catch((err) =>
+                                console.error("Visit tracking failed", err),
+                              );
                           }}
                         >
                           Visit

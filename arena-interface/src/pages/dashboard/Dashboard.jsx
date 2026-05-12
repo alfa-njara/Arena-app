@@ -25,105 +25,123 @@ import { useAppContext } from "../../context/AppContext";
 // ── PREMIUM LOCKED VIEW ──
 const PremiumLockedView = ({ isDarkMode }) => {
   return (
-    <div style={{
-      height: "calc(100vh - 70px)",
-      width: "100%",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      background: isDarkMode ? "#0f172a" : "#f8fafc",
-      padding: "20px",
-    }}>
-      <div style={{
-        background: isDarkMode ? "#1e293b" : "white",
-        border: `1px solid ${isDarkMode ? "rgba(245,158,11,0.3)" : "rgba(245,158,11,0.2)"}`,
-        borderRadius: "32px",
-        padding: "50px 40px",
-        maxWidth: "550px", // Larger card
+    <div
+      style={{
+        height: "calc(100vh - 70px)",
         width: "100%",
-        textAlign: "center",
-        boxShadow: isDarkMode 
-          ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)" 
-          : "0 25px 50px -12px rgba(245, 158, 11, 0.1)",
-        position: "relative",
-      }}>
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: isDarkMode ? "#0f172a" : "#f8fafc",
+        padding: "20px",
+      }}
+    >
+      <div
+        style={{
+          background: isDarkMode ? "#1e293b" : "white",
+          border: `1px solid ${isDarkMode ? "rgba(245,158,11,0.3)" : "rgba(245,158,11,0.2)"}`,
+          borderRadius: "32px",
+          padding: "50px 40px",
+          maxWidth: "550px", // Larger card
+          width: "100%",
+          textAlign: "center",
+          boxShadow: isDarkMode
+            ? "0 25px 50px -12px rgba(0, 0, 0, 0.5)"
+            : "0 25px 50px -12px rgba(245, 158, 11, 0.1)",
+          position: "relative",
+        }}
+      >
         {/* Premium Badge */}
-        <div style={{
-          position: "absolute",
-          top: "-15px",
-          left: "50%",
-          transform: "translateX(-50%)",
-          background: "linear-gradient(135deg, #f59e0b, #d97706)",
-          color: "white",
-          padding: "8px 20px",
-          borderRadius: "12px",
-          fontSize: "0.8rem",
-          fontWeight: 800,
-          display: "flex",
-          alignItems: "center",
-          gap: "8px",
-          boxShadow: "0 4px 12px rgba(217, 119, 6, 0.3)",
-        }}>
+        <div
+          style={{
+            position: "absolute",
+            top: "-15px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "linear-gradient(135deg, #f59e0b, #d97706)",
+            color: "white",
+            padding: "8px 20px",
+            borderRadius: "12px",
+            fontSize: "0.8rem",
+            fontWeight: 800,
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            boxShadow: "0 4px 12px rgba(217, 119, 6, 0.3)",
+          }}
+        >
           <BsStarFill /> PREMIUM ACCESS REQUIRED
         </div>
 
         {/* Big Icon Container */}
-        <div style={{
-          width: "90px",
-          height: "90px",
-          borderRadius: "24px",
-          background: "rgba(245, 158, 11, 0.1)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          margin: "0 auto 30px",
-        }}>
+        <div
+          style={{
+            width: "90px",
+            height: "90px",
+            borderRadius: "24px",
+            background: "rgba(245, 158, 11, 0.1)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            margin: "0 auto 30px",
+          }}
+        >
           <LuLock size={40} color="#f59e0b" />
         </div>
 
-        <h2 style={{
-          fontSize: "1.8rem",
-          fontWeight: 800,
-          marginBottom: "15px",
-          color: isDarkMode ? "#f1f5f9" : "#0f172a",
-        }}>
+        <h2
+          style={{
+            fontSize: "1.8rem",
+            fontWeight: 800,
+            marginBottom: "15px",
+            color: isDarkMode ? "#f1f5f9" : "#0f172a",
+          }}
+        >
           Dashboard Locked
         </h2>
 
-        <p style={{
-          fontSize: "1.05rem",
-          color: isDarkMode ? "#94a3b8" : "#64748b",
-          marginBottom: "35px",
-          lineHeight: 1.6,
-        }}>
-          Advanced statistics and performance tracking are reserved for Premium accounts. Turn your data into opportunities.
+        <p
+          style={{
+            fontSize: "1.05rem",
+            color: isDarkMode ? "#94a3b8" : "#64748b",
+            marginBottom: "35px",
+            lineHeight: 1.6,
+          }}
+        >
+          Advanced statistics and performance tracking are reserved for Premium
+          accounts. Turn your data into opportunities.
         </p>
 
         {/* Benefits Grid */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr",
-          gap: "15px",
-          marginBottom: "40px",
-          textAlign: "left",
-        }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "1fr 1fr",
+            gap: "15px",
+            marginBottom: "40px",
+            textAlign: "left",
+          }}
+        >
           {[
             "Real-time analytics",
             "Favorite tracking",
             "Unlimited history",
-            "Priority support"
+            "Priority support",
           ].map((text, i) => (
-            <div key={i} style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              padding: "12px",
-              background: isDarkMode ? "rgba(255,255,255,0.03)" : "#f8fafc",
-              borderRadius: "12px",
-              fontSize: "0.85rem",
-              fontWeight: 600,
-              color: isDarkMode ? "#cbd5e1" : "#475569",
-            }}>
+            <div
+              key={i}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                padding: "12px",
+                background: isDarkMode ? "rgba(255,255,255,0.03)" : "#f8fafc",
+                borderRadius: "12px",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+                color: isDarkMode ? "#cbd5e1" : "#475569",
+              }}
+            >
               <LuShieldCheck color="#f59e0b" size={18} />
               {text}
             </div>
@@ -131,17 +149,33 @@ const PremiumLockedView = ({ isDarkMode }) => {
         </div>
 
         {/* Instructions */}
-        <div style={{
-          textAlign: "left",
-          borderTop: `1px solid ${isDarkMode ? "rgba(255,255,255,0.05)" : "#f1f5f9"}`,
-          paddingTop: "30px",
-          marginBottom: "35px",
-        }}>
-          <h4 style={{ fontSize: "0.95rem", fontWeight: 700, marginBottom: "15px", color: "#f59e0b" }}>
+        <div
+          style={{
+            textAlign: "left",
+            borderTop: `1px solid ${isDarkMode ? "rgba(255,255,255,0.05)" : "#f1f5f9"}`,
+            paddingTop: "30px",
+            marginBottom: "35px",
+          }}
+        >
+          <h4
+            style={{
+              fontSize: "0.95rem",
+              fontWeight: 700,
+              marginBottom: "15px",
+              color: "#f59e0b",
+            }}
+          >
             How to activate my access?
           </h4>
-          <p style={{ fontSize: "0.85rem", color: "#94a3b8", marginBottom: "20px" }}>
-            Contact our administrative team for immediate activation of your analytical tools.
+          <p
+            style={{
+              fontSize: "0.85rem",
+              color: "#94a3b8",
+              marginBottom: "20px",
+            }}
+          >
+            Contact our administrative team for immediate activation of your
+            analytical tools.
           </p>
         </div>
 
@@ -165,13 +199,15 @@ const PremiumLockedView = ({ isDarkMode }) => {
             transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
             boxShadow: "0 10px 25px -5px rgba(217, 119, 6, 0.4)",
           }}
-          onMouseEnter={e => {
+          onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px) scale(1.01)";
-            e.currentTarget.style.boxShadow = "0 20px 30px -10px rgba(217, 119, 6, 0.5)";
+            e.currentTarget.style.boxShadow =
+              "0 20px 30px -10px rgba(217, 119, 6, 0.5)";
           }}
-          onMouseLeave={e => {
+          onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0) scale(1)";
-            e.currentTarget.style.boxShadow = "0 10px 25px -5px rgba(217, 119, 6, 0.4)";
+            e.currentTarget.style.boxShadow =
+              "0 10px 25px -5px rgba(217, 119, 6, 0.4)";
           }}
         >
           <LuPhone />
@@ -194,7 +230,7 @@ const Dashboard = () => {
     total_views: 0,
     total_visits: 0,
     total_favorites: 0,
-    growth: "+0%"
+    growth: "+0%",
   });
 
   const [isPremium, setIsPremium] = useState(user?.isPremium || false);
@@ -202,8 +238,9 @@ const Dashboard = () => {
 
   useEffect(() => {
     // Re-check premium status strictly from server on mount
-    api.get("/companies/me/")
-      .then(res => {
+    api
+      .get("/companies/me/")
+      .then((res) => {
         const premiumStatus = res.data?.is_premium || false;
         setIsPremium(premiumStatus);
         localStorage.setItem("is_premium", premiumStatus);
@@ -214,15 +251,16 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (!isPremium) return;
-    
+
     const fetchStats = () => {
-      api.get("/companies/stats/")
-         .then(res => {
-           if (res.data && res.data.chart_data) {
-             setStats(res.data);
-           }
-         })
-         .catch(err => console.error("Error fetching stats:", err));
+      api
+        .get("/companies/stats/")
+        .then((res) => {
+          if (res.data && res.data.chart_data) {
+            setStats(res.data);
+          }
+        })
+        .catch((err) => console.error("Error fetching stats:", err));
     };
 
     fetchStats();
@@ -256,7 +294,14 @@ const Dashboard = () => {
   // 1. Loading state while checking subscription
   if (loadingPremium) {
     return (
-      <div style={{ height: "calc(100vh - 70px)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div
+        style={{
+          height: "calc(100vh - 70px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
@@ -300,14 +345,14 @@ const Dashboard = () => {
               icon: <LuHeart />,
               color: "#dc3545",
             },
-            {
-              label: "Growth",
-              value: stats.growth,
-              trend: "vs last 30d",
-              isUp: !stats.growth.includes("-"),
-              icon: <LuTrendingUp />,
-              color: "#198754",
-            },
+            // {
+            //   label: "Growth",
+            //   value: stats.growth,
+            //   trend: "vs last 30d",
+            //   isUp: !stats.growth.includes("-"),
+            //   icon: <LuTrendingUp />,
+            //   color: "#198754",
+            // },
           ].map((s, i) => (
             <div className="col-4" key={i}>
               <div className="p-3 shadow-sm h-100 border-0" style={glassStyle}>
@@ -325,7 +370,9 @@ const Dashboard = () => {
                     {s.trend}
                   </span>
                 </div>
-                <h4 className={`fw-bold mb-0 ${isDarkMode ? "text-white" : "text-dark"}`}>
+                <h4
+                  className={`fw-bold mb-0 ${isDarkMode ? "text-white" : "text-dark"}`}
+                >
                   {s.value}
                 </h4>
                 <span className="text-muted x-small fw-bold text-uppercase">
@@ -338,7 +385,10 @@ const Dashboard = () => {
 
         <div className="row g-4 flex-grow-1 overflow-hidden min-h-0">
           <div className="col-lg-8 d-flex flex-column h-100">
-            <div className="flex-grow-1 p-4 shadow-sm d-flex flex-column" style={glassStyle}>
+            <div
+              className="flex-grow-1 p-4 shadow-sm d-flex flex-column"
+              style={glassStyle}
+            >
               <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
                 <div className="btn-group p-1 bg-secondary bg-opacity-10 rounded-4">
                   {["week", "month", "year"].map((t) => (
@@ -347,8 +397,12 @@ const Dashboard = () => {
                       onClick={() => setTimeframe(t)}
                       className={`btn btn-sm border-0 rounded-3 px-3 text-capitalize fw-bold ${
                         timeframe === t
-                          ? isDarkMode ? "btn-light text-dark" : "btn-dark text-white"
-                          : isDarkMode ? "text-white" : "text-dark"
+                          ? isDarkMode
+                            ? "btn-light text-dark"
+                            : "btn-dark text-white"
+                          : isDarkMode
+                            ? "text-white"
+                            : "text-dark"
                       }`}
                       style={{ fontSize: "0.75rem" }}
                     >
@@ -360,7 +414,9 @@ const Dashboard = () => {
                 <div className="d-flex gap-2">
                   <button
                     className={`btn btn-glass btn-sm d-flex align-items-center gap-2 px-3 ${isDarkMode ? "text-white" : "text-dark"}`}
-                    onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                    onClick={() =>
+                      setSortOrder(sortOrder === "desc" ? "asc" : "desc")
+                    }
                   >
                     <LuArrowUpDown size={14} />
                     <span className="fw-bold" style={{ fontSize: "0.7rem" }}>
@@ -398,16 +454,81 @@ const Dashboard = () => {
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={processedChartData}>
                     <defs>
-                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={metric === "views" ? "#0d6efd" : (metric === "visits" ? "#198754" : "#dc3545")} stopOpacity={0.3} />
-                        <stop offset="95%" stopColor={metric === "views" ? "#0d6efd" : (metric === "visits" ? "#198754" : "#dc3545")} stopOpacity={0} />
+                      <linearGradient
+                        id="chartGrad"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor={
+                            metric === "views"
+                              ? "#0d6efd"
+                              : metric === "visits"
+                                ? "#198754"
+                                : "#dc3545"
+                          }
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor={
+                            metric === "views"
+                              ? "#0d6efd"
+                              : metric === "visits"
+                                ? "#198754"
+                                : "#dc3545"
+                          }
+                          stopOpacity={0}
+                        />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={isDarkMode ? "rgba(255,255,255,0.05)" : "#eee"} />
-                    <XAxis dataKey="label" stroke="#888" fontSize={10} tickLine={false} axisLine={false} interval={timeframe === "year" ? 6 : timeframe === "month" ? 4 : 0} />
-                    <YAxis stroke="#888" fontSize={10} tickLine={false} axisLine={false} />
-                    <Tooltip contentStyle={{ backgroundColor: isDarkMode ? "#1e1e1e" : "#fff", borderRadius: "12px", border: "none", boxShadow: "0 10px 30px rgba(0,0,0,0.2)" }} />
-                    <Area type="monotone" dataKey={metric} stroke={metric === "views" ? "#0d6efd" : (metric === "visits" ? "#198754" : "#dc3545")} fillOpacity={1} fill="url(#chartGrad)" strokeWidth={3} animationDuration={1000} />
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke={isDarkMode ? "rgba(255,255,255,0.05)" : "#eee"}
+                    />
+                    <XAxis
+                      dataKey="label"
+                      stroke="#888"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                      interval={
+                        timeframe === "year" ? 6 : timeframe === "month" ? 4 : 0
+                      }
+                    />
+                    <YAxis
+                      stroke="#888"
+                      fontSize={10}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: isDarkMode ? "#1e1e1e" : "#fff",
+                        borderRadius: "12px",
+                        border: "none",
+                        boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey={metric}
+                      stroke={
+                        metric === "views"
+                          ? "#0d6efd"
+                          : metric === "visits"
+                            ? "#198754"
+                            : "#dc3545"
+                      }
+                      fillOpacity={1}
+                      fill="url(#chartGrad)"
+                      strokeWidth={3}
+                      animationDuration={1000}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -415,36 +536,76 @@ const Dashboard = () => {
           </div>
 
           <div className="col-lg-4 h-100">
-            <div className="h-100 d-flex flex-column p-4 shadow-sm" style={glassStyle}>
-              <h6 className={`fw-bold mb-4 text-uppercase tracking-widest ${isDarkMode ? "text-white" : "text-dark"}`} style={{ fontSize: "0.7rem" }}>Live Activity</h6>
+            <div
+              className="h-100 d-flex flex-column p-4 shadow-sm"
+              style={glassStyle}
+            >
+              <h6
+                className={`fw-bold mb-4 text-uppercase tracking-widest ${isDarkMode ? "text-white" : "text-dark"}`}
+                style={{ fontSize: "0.7rem" }}
+              >
+                Live Activity
+              </h6>
               <div className="flex-grow-1 overflow-auto pe-2 custom-scroll">
-                {stats.recent_activity.length > 0 ? stats.recent_activity.map((item, idx) => (
-                  <div key={idx} className="d-flex align-items-center gap-3 mb-3 p-2 rounded-4 hover-effect">
-                    <div style={{ 
-                      width: "36px", 
-                      height: "36px", 
-                      borderRadius: "50%", 
-                      background: item.type === "favorite" 
-                        ? "rgba(220, 53, 69, 0.1)" 
-                        : (item.visit_type === "website_click" ? "rgba(25, 135, 84, 0.1)" : "rgba(13, 110, 253, 0.1)"), 
-                      color: item.type === "favorite" 
-                        ? "#dc3545" 
-                        : (item.visit_type === "website_click" ? "#198754" : "#0d6efd"), 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "center", 
-                      flexShrink: 0 
-                    }}>
-                      {item.type === "favorite" ? <LuHeart size={16} /> : (item.visit_type === "website_click" ? <BsGlobe size={16} /> : <LuUser size={16} />)}
+                {stats.recent_activity.length > 0 ? (
+                  stats.recent_activity.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="d-flex align-items-center gap-3 mb-3 p-2 rounded-4 hover-effect"
+                    >
+                      <div
+                        style={{
+                          width: "36px",
+                          height: "36px",
+                          borderRadius: "50%",
+                          background:
+                            item.type === "favorite"
+                              ? "rgba(220, 53, 69, 0.1)"
+                              : item.visit_type === "website_click"
+                                ? "rgba(25, 135, 84, 0.1)"
+                                : "rgba(13, 110, 253, 0.1)",
+                          color:
+                            item.type === "favorite"
+                              ? "#dc3545"
+                              : item.visit_type === "website_click"
+                                ? "#198754"
+                                : "#0d6efd",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          flexShrink: 0,
+                        }}
+                      >
+                        {item.type === "favorite" ? (
+                          <LuHeart size={16} />
+                        ) : item.visit_type === "website_click" ? (
+                          <BsGlobe size={16} />
+                        ) : (
+                          <LuUser size={16} />
+                        )}
+                      </div>
+                      <div className="overflow-hidden">
+                        <p
+                          className={`mb-0 fw-bold text-truncate small ${isDarkMode ? "text-white" : "text-dark"}`}
+                        >
+                          {item.user}
+                        </p>
+                        <span className="text-muted x-small">
+                          {item.type === "favorite"
+                            ? "Favorited you"
+                            : item.visit_type === "website_click"
+                              ? "Visited your website"
+                              : "Viewed your profile"}{" "}
+                          • {item.label} {item.time_label}
+                        </span>
+                      </div>
                     </div>
-                    <div className="overflow-hidden">
-                      <p className={`mb-0 fw-bold text-truncate small ${isDarkMode ? "text-white" : "text-dark"}`}>{item.user}</p>
-                      <span className="text-muted x-small">
-                        {item.type === "favorite" ? "Favorited you" : (item.visit_type === "website_click" ? "Visited your website" : "Viewed your profile")} • {item.label} {item.time_label}
-                      </span>
-                    </div>
-                  </div>
-                )) : <p className="text-muted text-center mt-4 small">No recent activity yet.</p>}
+                  ))
+                ) : (
+                  <p className="text-muted text-center mt-4 small">
+                    No recent activity yet.
+                  </p>
+                )}
               </div>
             </div>
           </div>

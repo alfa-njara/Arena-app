@@ -1,20 +1,27 @@
 import React, { useEffect, useRef } from "react";
-import { BsTelephone, BsGlobe, BsX, BsGeoAlt, BsWhatsapp } from "react-icons/bs";
+import {
+  BsTelephone,
+  BsGlobe,
+  BsX,
+  BsGeoAlt,
+  BsWhatsapp,
+} from "react-icons/bs";
 import { useAppContext } from "../../context/AppContext";
 import api from "../../api";
 
 const CompanyProfileModal = ({ company, onClose }) => {
   const visitLogged = useRef(false);
   const { isDarkMode } = useAppContext();
-  
+
   useEffect(() => {
     if (company?.id && !visitLogged.current) {
       visitLogged.current = true;
-      api.post(`/companies/${company.id}/visit/`, { 
-        visit_type: 'profile_view',
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-      })
-        .catch(err => {
+      api
+        .post(`/companies/${company.id}/visit/`, {
+          visit_type: "profile_view",
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        })
+        .catch((err) => {
           console.error("Profile view tracking failed", err);
           visitLogged.current = false;
         });
@@ -26,11 +33,11 @@ const CompanyProfileModal = ({ company, onClose }) => {
   const hasMap = !!company.location;
 
   return (
-    <div className={`cpm-overlay ${isDarkMode ? "cpm-dark" : ""}`} onClick={onClose}>
-      <div 
-        className="cpm-modal"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div
+      className={`cpm-overlay ${isDarkMode ? "cpm-dark" : ""}`}
+      onClick={onClose}
+    >
+      <div className="cpm-modal" onClick={(e) => e.stopPropagation()}>
         {/* Close */}
         <button className="cpm-close" onClick={onClose}>
           <BsX size={22} />
@@ -41,9 +48,12 @@ const CompanyProfileModal = ({ company, onClose }) => {
           <div className="cpm-info">
             <div className="cpm-header">
               <div className="cpm-avatar">
-                <img 
-                  src={company.logo || `https://api.dicebear.com/7.x/avataaars/svg?seed=${company.companyName}`} 
-                  alt={company.companyName} 
+                <img
+                  src={
+                    company.logo ||
+                    `https://api.dicebear.com/7.x/avataaars/svg?seed=${company.companyName}`
+                  }
+                  alt={company.companyName}
                 />
               </div>
               <div>
@@ -64,92 +74,125 @@ const CompanyProfileModal = ({ company, onClose }) => {
               <div className="cpm-contacts">
                 {company.number && (
                   <a
-                    href={`https://wa.me/${company.number.replace(/[^0-9]/g, '')}`}
+                    href={`https://wa.me/${company.number.replace(/[^0-9]/g, "")}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="cpm-row"
                     onClick={(e) => e.stopPropagation()}
                   >
-                    <BsWhatsapp className="cpm-row-icon" style={{ color: "#25d366" }} />
+                    <BsWhatsapp
+                      className="cpm-row-icon"
+                      style={{ color: "#25d366" }}
+                    />
                     <div>
                       <small>WhatsApp</small>
                       <span>{company.number}</span>
                     </div>
                   </a>
                 )}
-                
+
                 {company.link && (
-                  <a 
-                    href={company.link} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={company.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="cpm-row"
                     onClick={(e) => {
                       e.stopPropagation();
-                      api.post(`/companies/${company.id}/visit/`, { 
-                        visit_type: 'website_click',
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                      })
-                        .catch(err => console.error(err));
+                      api
+                        .post(`/companies/${company.id}/visit/`, {
+                          visit_type: "website_click",
+                          timezone:
+                            Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        })
+                        .catch((err) => console.error(err));
                     }}
                   >
-                    <BsGlobe className="cpm-row-icon" style={{ color: "#2563eb" }} />
+                    <BsGlobe
+                      className="cpm-row-icon"
+                      style={{ color: "#2563eb" }}
+                    />
                     <div>
                       <small>Website 1</small>
-                      <span>{company.link.replace("https://", "").replace("http://", "")}</span>
+                      <span>
+                        {company.link
+                          .replace("https://", "")
+                          .replace("http://", "")}
+                      </span>
                     </div>
                   </a>
                 )}
 
                 {company.is_premium && company.website_2 && (
-                   <a 
-                    href={company.website_2} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={company.website_2}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="cpm-row"
                     onClick={(e) => {
                       e.stopPropagation();
-                      api.post(`/companies/${company.id}/visit/`, { 
-                        visit_type: 'website_click',
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                      })
-                        .catch(err => console.error(err));
+                      api
+                        .post(`/companies/${company.id}/visit/`, {
+                          visit_type: "website_click",
+                          timezone:
+                            Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        })
+                        .catch((err) => console.error(err));
                     }}
                   >
-                    <BsGlobe className="cpm-row-icon" style={{ color: "#059669" }} />
+                    <BsGlobe
+                      className="cpm-row-icon"
+                      style={{ color: "#059669" }}
+                    />
                     <div>
                       <small>Website 2</small>
-                      <span>{company.website_2.replace("https://", "").replace("http://", "")}</span>
+                      <span>
+                        {company.website_2
+                          .replace("https://", "")
+                          .replace("http://", "")}
+                      </span>
                     </div>
                   </a>
                 )}
 
                 {company.is_premium && company.website_3 && (
-                   <a 
-                    href={company.website_3} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
+                  <a
+                    href={company.website_3}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="cpm-row"
                     onClick={(e) => {
                       e.stopPropagation();
-                      api.post(`/companies/${company.id}/visit/`, { 
-                        visit_type: 'website_click',
-                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-                      })
-                        .catch(err => console.error(err));
+                      api
+                        .post(`/companies/${company.id}/visit/`, {
+                          visit_type: "website_click",
+                          timezone:
+                            Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        })
+                        .catch((err) => console.error(err));
                     }}
                   >
-                    <BsGlobe className="cpm-row-icon" style={{ color: "#7c3aed" }} />
+                    <BsGlobe
+                      className="cpm-row-icon"
+                      style={{ color: "#7c3aed" }}
+                    />
                     <div>
                       <small>Website 3</small>
-                      <span>{company.website_3.replace("https://", "").replace("http://", "")}</span>
+                      <span>
+                        {company.website_3
+                          .replace("https://", "")
+                          .replace("http://", "")}
+                      </span>
                     </div>
                   </a>
                 )}
 
                 {company.location && (
                   <div className="cpm-row">
-                    <BsGeoAlt className="cpm-row-icon" style={{ color: "#f59e0b" }} />
+                    <BsGeoAlt
+                      className="cpm-row-icon"
+                      style={{ color: "#f59e0b" }}
+                    />
                     <div>
                       <small>Location</small>
                       <span>{company.location}</span>
@@ -178,14 +221,21 @@ const CompanyProfileModal = ({ company, onClose }) => {
         .cpm-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(0,0,0,0.5);
+          background: rgba(0, 0, 0, 0.5);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 1050;
           animation: cpmFade 0.2s ease forwards;
         }
-        @keyframes cpmFade { from { opacity:0 } to { opacity:1 } }
+        @keyframes cpmFade {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
 
         .cpm-modal {
           width: 90vw;
@@ -194,10 +244,19 @@ const CompanyProfileModal = ({ company, onClose }) => {
           border-radius: 16px;
           overflow: hidden;
           position: relative;
-          box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+          box-shadow: 0 16px 48px rgba(0, 0, 0, 0.2);
           animation: cpmUp 0.3s ease forwards;
         }
-        @keyframes cpmUp { from { transform:translateY(20px);opacity:0 } to { transform:translateY(0);opacity:1 } }
+        @keyframes cpmUp {
+          from {
+            transform: translateY(20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
 
         .cpm-layout {
           display: flex;
@@ -210,11 +269,17 @@ const CompanyProfileModal = ({ company, onClose }) => {
           flex-shrink: 0;
           overflow-y: auto;
           padding: 32px;
-          border-right: 1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
+          border-right: 1px solid
+            ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
         }
 
-        .cpm-info::-webkit-scrollbar { width: 3px; }
-        .cpm-info::-webkit-scrollbar-thumb { background: rgba(128,128,128,0.15); border-radius: 10px; }
+        .cpm-info::-webkit-scrollbar {
+          width: 3px;
+        }
+        .cpm-info::-webkit-scrollbar-thumb {
+          background: rgba(128, 128, 128, 0.15);
+          border-radius: 10px;
+        }
 
         .cpm-header {
           display: flex;
@@ -222,7 +287,8 @@ const CompanyProfileModal = ({ company, onClose }) => {
           gap: 16px;
           margin-bottom: 28px;
           padding-bottom: 24px;
-          border-bottom: 1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
+          border-bottom: 1px solid
+            ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
         }
 
         .cpm-avatar {
@@ -253,7 +319,7 @@ const CompanyProfileModal = ({ company, onClose }) => {
           text-transform: uppercase;
           letter-spacing: 0.5px;
           color: #2563eb;
-          background: rgba(37,99,235,0.08);
+          background: rgba(37, 99, 235, 0.08);
           padding: 3px 10px;
           border-radius: 6px;
         }
@@ -297,7 +363,9 @@ const CompanyProfileModal = ({ company, onClose }) => {
         }
 
         a.cpm-row:hover {
-          background: ${isDarkMode ? "rgba(255,255,255,0.04)" : "rgba(0,0,0,0.03)"};
+          background: ${isDarkMode
+            ? "rgba(255,255,255,0.04)"
+            : "rgba(0,0,0,0.03)"};
         }
 
         .cpm-row-icon {
@@ -372,7 +440,8 @@ const CompanyProfileModal = ({ company, onClose }) => {
             width: 100%;
             max-height: 50%;
             border-right: none;
-            border-bottom: 1px solid ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
+            border-bottom: 1px solid
+              ${isDarkMode ? "rgba(255,255,255,0.08)" : "#eee"};
             padding: 20px;
           }
           .cpm-map {
